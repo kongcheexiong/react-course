@@ -1,28 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import "./App.css";
 
 function App() {
- const [count, setCount] = useState()
-
- //count = 0 
- // setCount(10)
- // count = 10
-
   return (
     <div style={{
-      fontSize: '30px',
       display: 'flex',
-      flexDirection: 'column'
-    }} >
-      <input type="text" onChange={(e)=>setCount('sdfdf')} />
-      this is hello from git asdf
-      hi there
-      {count}
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      backgroundColor: 'gray',
+      padding: '5px 10px',
+      borderRadius: '10px'
+
+     
+    }}>
+      {/**logo */}
+      <div style={{
+         display: 'flex',
+         flexDirection: 'row',
+         placeItems:'center',
+         columnGap:'5px'
+
+      }}>
+      <img style={{
+        height: '50px',
+        borderRadius: '10px'
+      }} src="img.jpg" alt="" />
+        <h2>this logo</h2>
+    
+      </div>
+      {/**login btn */}
+ 
+ 
+     <button onClick={()=>alert('Hi!!')} style={{width: '100px', borderRadius: '10px'}}>login</button>
+
+
+       
+        
+   
       
-      
+
+     
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
