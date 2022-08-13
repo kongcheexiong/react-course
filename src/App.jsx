@@ -1,19 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
-function App() {
+const App = ()=> {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      backgroundColor: 'gray',
-      padding: '5px 10px',
-      borderRadius: '10px'
-
-     
-    }}>
+    <>
+     <div className="container">
       {/**logo */}
       <div style={{
          display: 'flex',
@@ -32,17 +24,43 @@ function App() {
       {/**login btn */}
  
  
-     <button onClick={()=>alert('Hi!!')} style={{width: '100px', borderRadius: '10px'}}>login</button>
-
-
-       
-        
-   
-      
+     <button onClick={()=>alert('Hi!!')} style={{width: '100px' , height: '45px', borderRadius: '10px'}}>login</button>
 
      
     </div>
+    {/**component */}
+    <div style={{
+      height: '500px',
+  
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+      
+    }}>
+      <ComponentA title = 'kongchee' age= {10} address = {'sfsdf'}/>
+      <ComponentA title = 'chia'  age= {10}/>
+      <ComponentA title = 'bounma'/>
+      <ComponentA title = 'chue' />
+      
+
+    </div>
+    
+   
+    </>
+   
   );
+}
+
+const ComponentA = (props)=>{
+  const {title, age,address} = props
+
+  return <>
+  <h1 style={{backgroundColor: 'gray'}}>Hello {address}
+ </h1>
+
+  </>
+
 }
 
 export default App;
