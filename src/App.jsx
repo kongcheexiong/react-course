@@ -2,98 +2,28 @@ import { useEffect, useState, useContext, createContext } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 
-import { Welcome } from "./pages/Welcome";
+import Login from "./pages/login";
+import Register from "./pages/register";
 
-import { personContext } from "./contexts/Person.provider";
+import { router } from "./constants";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LoginsLayout from "./layouts/LoginLayout";
 
 const App = () => {
-  const [name, setName] = useState("");
-  const { person, setPerson } = useContext(personContext);
-
-  useEffect(() => {
-    console.log(person);
-
-    console.log(name);
-  }, [name]);
-
   return (
-    <>
-      <div className="container">
-        {/**logo */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            placeItems: "center",
-            columnGap: "5px",
-          }}
-        >
-          <img
-            style={{
-              height: "50px",
-              borderRadius: "10px",
-            }}
-            src="img.jpg"
-            alt=""
-          />
-          <h2>this logo</h2>
-        </div>
-        {/**login btn */}
+    <BrowserRouter>
+      <Routes>
+        {/**login layout */}
+        <Route element={<LoginsLayout />}>
+          <Route path="/" element={<Login />} />
+          <Route path={`${router.REGISTER}`} element={<Register />} />
 
-        <button
-          onClick={() => console.log(name)}
-          style={{ width: "100px", height: "45px", borderRadius: "10px" }}
-        >
-          login
-        </button>
-        <input
-          onChange={(e) =>
-            setPerson({
-              name: e.target.value,
-              surname: e.target.value + "asdf",
-            })
-          }
-        />
-      </div>
-      {/**component */}
-      <div
-        style={{
-          height: "500px",
-
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <ComponentA title="kongchee" age={10} address={"sfsdf"} />
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            columnGap: "10px",
-          }}
-        >
-          <Welcome src={`img.jpg`} alt={"img.jpg"} />
-          <Welcome src={`img.jpg`} alt={"img.jpg"} />
-        </div>
-      </div>
-    </>
-  );
-};
-
-const ComponentA = (props) => {
-  const { title, age, address } = props;
-  const { person, setPerson } = useContext(personContext);
-
-  return (
-    <>
-      <h1 style={{ backgroundColor: "gray" }}>
-        Hello {person?.name} {person?.surname}
-      </h1>
-    </>
+        </Route>
+        
+      </Routes>
+    </BrowserRouter>
   );
 };
 
 export default App;
-
