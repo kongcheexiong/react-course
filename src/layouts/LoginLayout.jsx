@@ -12,7 +12,7 @@ export default function LoginsLayout() {
     })
   return (
     <>
-   
+    
       {/**app bar */}
       <Box sx={{ flexGrow: 1}}>
         <AppBar position="static" sx={{padding: '10px', backgroundColor: '#F3F4F8' }}>
@@ -21,7 +21,7 @@ export default function LoginsLayout() {
           </Typography>
         </AppBar>
       </Box>
-
+        
 
       <div
         style={{
@@ -30,7 +30,7 @@ export default function LoginsLayout() {
           justifyContent: "space-evenly",
           height: height/1.5,
           alignItems: 'center'
-          
+           
         }}
       >
         {/**logo and title */}
@@ -47,6 +47,7 @@ export default function LoginsLayout() {
             style={{
               height: "150px",
               width: "170px",
+              borderRadius:"20px",
             }}
           />
           <h3 className="en">Information Announcement System of FNS</h3>
