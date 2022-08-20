@@ -1,7 +1,9 @@
+
 export const textFieldStyle = {
-    width: "300px",
+    width: "auto",
     backgroundColor: "white",
     "& .MuiInputBase-root": {
       fontFamily: "Noto sans lao",
     },
+    
 }
