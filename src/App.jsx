@@ -23,8 +23,6 @@ const App = () => {
           <Route path={`${router.REGISTER}`} element={<Register />} />
           <Route path={`/dogs/:id`} element={<Dogs />} />
           <Route path={`/dogs`} element={<Dogs />} />
-         
-        
         </Route>
         <Route path="/dashboard" element={<Dashboard/>} />
 

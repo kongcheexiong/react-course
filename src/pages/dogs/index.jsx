@@ -7,8 +7,10 @@ export default function Dogs() {
   const { data, error, isError, isLoading, status } = useQuery("dogs", fetchDogs);
 
 
+
+
+
   useEffect(() => {
-    
     console.log('data',data)
 
   }, [data]);
@@ -21,6 +23,9 @@ export default function Dogs() {
       ) : (
         <>
           <h2>Title: {data?.title}</h2>
+          <img style={{
+            height: '100px'
+          }} src={data?.image} alt="" />
          
           
           

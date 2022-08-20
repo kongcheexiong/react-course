@@ -1,13 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Outlet } from "react-router-dom";
 import { AppBar, Box, Typography, useMediaQuery } from "@mui/material";
 
+import axios from "axios";
+
 export default function LoginsLayout() {
-  const matches = useMediaQuery("(max-width:800px)")
+  const matches = useMediaQuery("(max-width:800px)");
   const height = window.screen.height;
 
+  const [data, setData] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
+  const [isErr, setErr] = useState(false)
+
+  const fetchData = async () => {
+    setIsLoading(true)
+    await axios
+      .get("http://localhost:5000/user",{
+        timeout: 1000
+      })
+      .then((res) => {
+        console.log(res);
+        setData(res.data.message)
+        setIsLoading(false)
+        setErr(false)
+      })
+      .catch((err) => {
+        setIsLoading(false)
+        setErr(true)
+        console.log(err)});
+  };
+
   useEffect(() => {
+    fetchData();
     console.log(height);
   });
   return (
@@ -23,15 +48,14 @@ export default function LoginsLayout() {
             component="div"
             sx={{ flexGrow: 1, color: "black" }}
           >
-            News
+            News {
+              isLoading? <span>Loading...</span> : isErr? <>there is an err</>: <>{data}</>
+            }
           </Typography>
         </AppBar>
       </Box>
 
-      <div
-        className="container"
-        
-      >
+      <div className="container">
         {/**logo and title */}
         <div
           style={{

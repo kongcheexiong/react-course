@@ -36,7 +36,7 @@ export default function Login() {
       className="form"
     >
       <TextField
-        placeholder="username"
+        placeholder="Student ID"
         size="small"
         sx={{ ...textFieldStyle }}
       />

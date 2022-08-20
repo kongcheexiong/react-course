@@ -7,6 +7,7 @@ const instance = axios.create({
 // fetch all data 
 export const fetchDogs = async () => {
   const path = location.pathname.split("/");
+  const text = 'ssdfssa-asdf/asdfsdf/asdfasdf/asdf'
 
   if (path[2]) {
     const { data } = await instance.get(`products/${path[2]}`);
