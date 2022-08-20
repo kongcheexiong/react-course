@@ -1,10 +1,10 @@
 import axios from "axios";
-
+// create instance for axios
 const instance = axios.create({
   baseURL: "https://fakestoreapi.com/",
   timeout: 1000,
 });
-
+// fetch all data 
 export const fetchDogs = async () => {
   const path = location.pathname.split("/");
 
