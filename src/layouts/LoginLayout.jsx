@@ -1,13 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Outlet } from "react-router-dom";
 import { AppBar, Box, Typography, useMediaQuery } from "@mui/material";
 
+import axios from "axios";
+
+
 export default function LoginsLayout() {
-  const matches = useMediaQuery("(max-width:800px)")
+  const matches = useMediaQuery("(max-width:800px)");
   const height = window.screen.height;
 
+  const [data, setData] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
+  const [isErr, setErr] = useState(false)
+
+  
+
   useEffect(() => {
+  
     console.log(height);
   });
   return (
@@ -23,15 +33,12 @@ export default function LoginsLayout() {
             component="div"
             sx={{ flexGrow: 1, color: "black" }}
           >
-            News
+            News 
           </Typography>
         </AppBar>
       </Box>
 
-      <div
-        className="container"
-        
-      >
+      <div className="container">
         {/**logo and title */}
         <div
           style={{
@@ -41,7 +48,7 @@ export default function LoginsLayout() {
           }}
         >
           <img
-            src="../../img.jpg"
+            src="http://127.0.0.1:8000/api/image/1662020083957.jpeg"
             alt="img.jpg"
             style={{
               height: "150px",

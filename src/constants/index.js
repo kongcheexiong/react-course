@@ -1,7 +1,9 @@
+
 export const router = {
   REGISTER: "/register",
   DASHBOARD: "/dashboard",
 };
+
 export const font = {
   EN: "Segoe UI",
   LAO: "Noto Sans Lao",
@@ -12,3 +14,5 @@ export const color = {
   BLUE_COLOR: "#1565C0",
   GRAY_COLLOR: "#F3F4F8",
 };
+
+

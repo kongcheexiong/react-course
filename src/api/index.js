@@ -17,3 +17,12 @@ export const fetchDogs = async () => {
   return data;
 
 };
+
+// https://fakestoreapi.com/product/1
+
+// get https://fakestoreapi.com/product/1
+// put https://fakestoreapi.com/product/1
+// delete https://fakestoreapi.com/product/1
+
+// post localhost/api/adduser?userid='fsdf'&username='sdafas'
+// patch

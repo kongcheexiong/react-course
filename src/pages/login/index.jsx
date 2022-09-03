@@ -9,17 +9,33 @@ import { textFieldStyle } from "../../style";
 import { Outlet, useNavigate } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
-export default function Login() {
-  const navigate = useNavigate()
+import axios from "axios";
 
+export default function Login() {
+  const navigate = useNavigate();
+
+  const [userId, setUserId] = useState("");
+  const [password, setPassword] = useState("");
 
   const [person, setPerson] = useState("");
   const [role, setRole] = useState("none");
   const matches = useMediaQuery("(max-width:800px)");
 
-  const handleLogin = ()=>{
-    navigate('/dashboard')
-  }
+  const handleLogin = () => {
+    //console.log(userId + password)
+    axios
+      .post("http://127.0.0.1:8000/api/login",{
+        userId: userId,
+        password: password,
+      },{
+        timeout: 5000
+      })
+      .then(res => {
+        localStorage.setItem("token",res.data.token)
+        console.log(res.data)})
+        console.log(localStorage.getItem("token"))
+      .catch(err => console.error(err));
+  };
 
   return (
     <div
@@ -36,11 +52,17 @@ export default function Login() {
       className="form"
     >
       <TextField
-        placeholder="username"
+        onChange={(e) => {
+          setUserId(e.target.value);
+        }}
+        placeholder="user id"
         size="small"
         sx={{ ...textFieldStyle }}
       />
       <TextField
+        onChange={(e) => {
+          setPassword(e.target.value);
+        }}
         placeholder="password"
         size="small"
         sx={{ ...textFieldStyle }}
@@ -65,7 +87,9 @@ export default function Login() {
       >
         Don't have account?
       </a>
-      <Button onClick={handleLogin} variant="contained">Login</Button>
+      <Button onClick={handleLogin} variant="contained">
+        Login
+      </Button>
     </div>
   );
 }

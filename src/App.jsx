@@ -19,16 +19,17 @@ const App = () => {
       <Routes>
         {/**login layout */}
         <Route element={<LoginsLayout />}>
-          <Route path="/" element={<Login />} />
           <Route path={`${router.REGISTER}`} element={<Register />} />
           <Route path={`/dogs/:id`} element={<Dogs />} />
           <Route path={`/dogs`} element={<Dogs />} />
-         
-        
+          <Route path="/" element={<Login />} />
         </Route>
-        <Route path="/dashboard" element={<Dashboard/>} />
-
+        {/** */}
+        <Route path="/dashboard" element={<Dashboard />} />
+      
+        
       </Routes>
+     
     </BrowserRouter>
   );
 };
