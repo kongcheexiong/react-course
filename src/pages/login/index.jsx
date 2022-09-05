@@ -6,10 +6,11 @@ import { withStyles } from "@mui/styles";
 
 import { textFieldStyle } from "../../style";
 
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, Navigate } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 import axios from "axios";
+import { router } from "../../constants";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,21 +22,31 @@ export default function Login() {
   const [role, setRole] = useState("none");
   const matches = useMediaQuery("(max-width:800px)");
 
-  const handleLogin = () => {
+  const token = localStorage.getItem("token");
+
+  const handleLogin = async () => {
     //console.log(userId + password)
-    axios
-      .post("http://127.0.0.1:8000/api/login",{
-        userId: userId,
-        password: password,
-      },{
-        timeout: 5000
-      })
-      .then(res => {
-        localStorage.setItem("token",res.data.token)
-        console.log(res.data)})
-        console.log(localStorage.getItem("token"))
-      .catch(err => console.error(err));
+    await axios
+      .post(
+        "http://127.0.0.1:8000/api/login",
+        {
+          userId: userId,
+          password: password,
+        },
+        {
+          timeout: 5000,
+        }
+      )
+      .then((res) => {
+        localStorage.setItem("token", res.data.token);
+        console.log(res.data);
+      });
+    // console.log(localStorage.getItem("token"))
+    navigate(router.DASHBOARD).catch((err) => console.error(err));
   };
+  if (token) {
+    return <Navigate to={router.DASHBOARD} />;
+  }
 
   return (
     <div

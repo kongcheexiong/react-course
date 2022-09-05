@@ -10,6 +10,7 @@ import { router } from "./constants";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginsLayout from "./layouts/LoginLayout";
 import Dogs from "./pages/dogs";
+import ProtectedRoute from "./routes/protectedRoute";
 
 import Dashboard from "./pages/dashboard";
 
@@ -25,11 +26,17 @@ const App = () => {
           <Route path="/" element={<Login />} />
         </Route>
         {/** */}
-        <Route path="/dashboard" element={<Dashboard />} />
-      
-        
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+        <Route
+          exact
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-     
     </BrowserRouter>
   );
 };
