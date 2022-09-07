@@ -13,8 +13,26 @@ import Dogs from "./pages/dogs";
 import ProtectedRoute from "./routes/protectedRoute";
 
 import Dashboard from "./pages/dashboard";
+import DashboardLauOut from "./layouts/dashborad.layout";
+import MyDashboradLayOut from "./layouts/MyDashboradLayOut";
+import Users from "./pages/users";
 
 const App = () => {
+  const privateRoute = [
+    {
+      path: router.DASHBOARD,
+      element: <Dashboard/>
+    },
+    {
+      path: router.USERS,
+      element: <Users/>
+    },
+    
+  
+  ]
+   
+
+  
   return (
     <BrowserRouter>
       <Routes>
@@ -27,15 +45,32 @@ const App = () => {
         </Route>
         {/** */}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-        <Route
-          exact
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
+        <Route element={<MyDashboradLayOut />}>
+          {
+            privateRoute.map((val, index)=>{
+              return <Route key={index} path={val.path} element={
+                <privateRoute>
+                  {val.element}
+                </privateRoute>
+              }/>
+            })
           }
-        />
+          
+          
+        </Route>
+
+        {/*        
+        <Route element={<DashboardLauOut />}>
+          <Route
+            exact
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Route> */}
       </Routes>
     </BrowserRouter>
   );
