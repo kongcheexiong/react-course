@@ -1,16 +1,20 @@
 import { display } from "@mui/system";
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { router } from "../constants";
+import { font, router } from "../constants";
 import "./sideNav.css";
 
+//icon
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 
 import { Avatar, Divider, Stack } from "@mui/material";
 
 export default function MyDashboradLayOut() {
+ 
   const navigate = useNavigate();
-  sideNavData = [
+   const sideNavData = [
     {
       name: "ໜ້າຫຼັກ",
       icon: <DashboardIcon fontSize="small" />,
@@ -18,7 +22,7 @@ export default function MyDashboradLayOut() {
     },
     {
       name: "ຈັດການຂໍ້ມູນຜູ້ໃຊ້",
-      icon: <DashboardIcon fontSize="small" />,
+      icon: <PersonIcon fontSize="small" />,
       router: `${router.USERS}`,
     },
 
@@ -46,17 +50,18 @@ export default function MyDashboradLayOut() {
               <h1
                 style={{
                   color: "rgba(27, 21, 76, 1)",
-                  fontFamily: `${font.LAO_FONT}`,
+                  fontFamily: `${font.EN}`,
                 }}
               >
-                {hotelName}
+                Logo
               </h1>
             </div>
-            <hr />
+            <Divider/>
             {/**side nav menu */}
 
             <div
               style={{
+                marginTop: '20px',
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -66,43 +71,41 @@ export default function MyDashboradLayOut() {
               {/* user menu */}
                <div>
                 {sideNavData?.map((data, index) => {
-                  if (data.access.includes(userRole)) {
-                    return (
-                      <a
-                        key={index}
-                        onClick={() => {
-                          if (!data.router == "") {
-                            navigate(data?.router);
-                          }
-                        }}
-                        style={{
-                          backgroundColor:
-                            location.pathname.split("/")[1] ===
-                            data?.router.split("/")[1]
-                              ? "#F8F9FA"
-                              : `rgba(255, 255, 255, 1)`,
-                        }}
-                      >
-                        <Stack direction="column">
-                          <Stack
-                            direction="row"
-                            alignItems="center"
-                            spacing={2}
-                            justifyContent="space-between"
-                            sx={{
-                              paddingRight: "30px",
-                            }}
-                          >
-                            <Stack direction="row" spacing={1}>
-                              <div>{data?.icon}</div>
-                              <div>{data?.name}</div>
-                            </Stack>
-                            
+                  return (
+                    <a
+                      key={index}
+                      onClick={() => {
+                        if (!data.router == "") {
+                          navigate(data?.router);
+                        }
+                      }}
+                      style={{
+                        backgroundColor:
+                          location.pathname.split("/")[1] ===
+                          data?.router.split("/")[1]
+                            ? "#F8F9FA"
+                            : `rgba(255, 255, 255, 1)`,
+                      }}
+                    >
+                      <Stack direction="column">
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={2}
+                          justifyContent="space-between"
+                          sx={{
+                            paddingRight: "30px",
+                          }}
+                        >
+                          <Stack direction="row" spacing={1}>
+                            <div>{data?.icon}</div>
+                            <div>{data?.name}</div>
                           </Stack>
+                          
                         </Stack>
-                      </a>
-                    );
-                  }
+                      </Stack>
+                    </a>
+                  );
                 })}
               </div>
               

@@ -48,23 +48,19 @@
     top: 0;
     right: 0;
     height: 100%;
-    
     border-radius: 10px;
     z-index: -1;
     transition: all 1s;
   }
   
   nav ul a:hover {
-    opacity: 0.5;
+    opacity: 0.2;
     cursor: pointer;
   }
   
-  nav ul a:hover:before {
-  }
+ 
   
-  .wrapper {
-    margin-left: 260px;
-  }
+ 
   nav ul .menu {
     position: sticky;
     height: 300px;
