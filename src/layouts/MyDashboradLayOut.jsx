@@ -8,8 +8,9 @@ import "./sideNav.css";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 
-import { Avatar, Divider, Stack } from "@mui/material";
+import { Avatar, Divider, Stack,IconButton, Badge } from "@mui/material";
 
 export default function MyDashboradLayOut() {
  
@@ -297,7 +298,7 @@ export default function MyDashboradLayOut() {
         >
           <Stack direction="row-reverse" spacing={0} alignItems="center">
             {/**profile */}
-            {localStorage.getItem("hotel") ? (
+            
               <IconButton onClick={() => {}}>
                 <Avatar
                   alt="Remy Sharp"
@@ -305,29 +306,19 @@ export default function MyDashboradLayOut() {
                   sx={{ width: 30, height: 30 }}
                 />
               </IconButton>
-            ) : null}
+           
 
             {/**name */}
             <span
               className="en"
               style={{ fontSize: "16px", fontWeight: "500" }}
             >
-              {localStorage.getItem("userName")}
+              {localStorage.getItem("name")}
             </span>
           </Stack>
 
-          {/**notification */}
-          {localStorage.getItem("hotel") ? (
-            <IconButton
-              onClick={() => {
-                navigate(`${router.BOOKING}`);
-              }}
-            >
-              <Badge color="error" badgeContent={notification}>
-                <NotificationsIcon fontSize="medium" />
-              </Badge>
-            </IconButton>
-          ) : null}
+          
+        
         </Stack>
         <div style={{ margin: "30px 30px", padding: "", backgroundColor: "" }}>
           <Outlet />
