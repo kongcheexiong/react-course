@@ -12,12 +12,7 @@
 
 }
 
-a {
-  color: black;
-}
-a:hover {
-  color: red;
-}
+
 .en {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }

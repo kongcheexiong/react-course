@@ -49,9 +49,9 @@ const App = () => {
           {
             privateRoute.map((val, index)=>{
               return <Route key={index} path={val.path} element={
-                <privateRoute>
+                <ProtectedRoute>
                   {val.element}
-                </privateRoute>
+                </ProtectedRoute>
               }/>
             })
           }

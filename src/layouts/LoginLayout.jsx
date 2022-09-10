@@ -48,7 +48,7 @@ export default function LoginsLayout() {
           }}
         >
           <img
-            src="http://127.0.0.1:8000/api/image/1662020083957.jpeg"
+            src="app-icon.png"
             alt="img.jpg"
             style={{
               height: "150px",

@@ -25,7 +25,7 @@ export default function Login() {
   const token = localStorage.getItem("token");
 
   const handleLogin = async () => {
-    //console.log(userId + password)
+     console.log(userId + password)
     await axios
       .post(
         "http://127.0.0.1:8000/api/login",
@@ -40,10 +40,9 @@ export default function Login() {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("name", `${res.data?.data[0]?.firstName} ${res.data?.data[0]?.lastName}`)
+        navigate(router.DASHBOARD)
         console.log(res.data);
-      });
-    // console.log(localStorage.getItem("token"))
-    navigate(router.DASHBOARD).catch((err) => console.error(err));
+      }).catch((err) => console.error(err));
   };
   if (token) {
     return <Navigate to={router.DASHBOARD} />;
