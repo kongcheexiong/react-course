@@ -9,6 +9,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import GroupIcon from '@mui/icons-material/Group';
+import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
 
 import { Avatar, Divider, Stack,IconButton, Badge } from "@mui/material";
 
@@ -22,9 +25,24 @@ export default function MyDashboradLayOut() {
       router: `${router.DASHBOARD}`,
     },
     {
+      name: "ຈັດການຂໍ້ມູນປະເພດຜູ້ໃຊ້",
+      icon: <GroupIcon fontSize="small" />,
+      router: `${router.USERTYPE}`,
+    },
+    {
       name: "ຈັດການຂໍ້ມູນຜູ້ໃຊ້",
       icon: <PersonIcon fontSize="small" />,
       router: `${router.USERS}`,
+    },
+    {
+      name: "ຈັດການຂໍ້ມູນປະເພດຂ່າວສານ",
+      icon: <AutoAwesomeMotionIcon fontSize="small" />,
+      router: `${router.NEWSCATEGORY}`,
+    },
+    {
+      name: "ຈັດການຂໍ້ມູນຂ່າວສານ",
+      icon: <NewspaperIcon fontSize="small" />,
+      router: `${router.NEWS}`,
     },
 
   ]
@@ -98,7 +116,7 @@ export default function MyDashboradLayOut() {
                             paddingRight: "30px",
                           }}
                         >
-                          <Stack direction="row" spacing={1}>
+                          <Stack direction="row" alignItems='center' spacing={1}>
                             <div>{data?.icon}</div>
                             <div>{data?.name}</div>
                           </Stack>

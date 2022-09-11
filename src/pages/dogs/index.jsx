@@ -6,6 +6,7 @@ import { font } from "../../constants";
 
 export default function Dogs() {
   const { data, error, isError, isLoading, status } = useQuery("dogs", fetchDogs);
+ 
 
   const [user,setUser] = useState('asdf') /////
   const [number, setNumber] = useState(1)

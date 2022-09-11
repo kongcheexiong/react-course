@@ -18,6 +18,9 @@ export const fetchDogs = async () => {
 
 };
 
+// insert users 
+
+
 // https://fakestoreapi.com/product/1
 
 // get https://fakestoreapi.com/product/1

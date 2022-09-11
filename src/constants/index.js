@@ -2,7 +2,10 @@
 export const router = {
   REGISTER: "/register",
   DASHBOARD: "/dashboard",
-  USERS: "/users"
+  USERS: "/users",
+  NEWSCATEGORY: "/news-category",
+  USERTYPE: "/user-type",
+  NEWS: "/news"
 };
 
 export const font = {
@@ -15,5 +18,7 @@ export const color = {
   BLUE_COLOR: "#1565C0",
   GRAY_COLLOR: "#F3F4F8",
 };
+
+export const server_url = "http://127.0.0.1:8000/api/"
 
 

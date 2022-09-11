@@ -12,10 +12,15 @@ import LoginsLayout from "./layouts/LoginLayout";
 import Dogs from "./pages/dogs";
 import ProtectedRoute from "./routes/protectedRoute";
 
-import Dashboard from "./pages/dashboard";
+// layout
 import DashboardLauOut from "./layouts/dashborad.layout";
 import MyDashboradLayOut from "./layouts/MyDashboradLayOut";
+// pages
 import Users from "./pages/users";
+import Dashboard from "./pages/dashboard";
+import UserType from "./pages/userType";
+import NewsCategory from "./pages/newsCategory";
+import News from "./pages/news";
 
 const App = () => {
   const privateRoute = [
@@ -27,6 +32,19 @@ const App = () => {
       path: router.USERS,
       element: <Users/>
     },
+    {
+      path: router.USERTYPE,
+      element: <UserType/>
+    },
+    {
+      path: router.NEWSCATEGORY,
+      element: <NewsCategory/>
+    },
+    {
+      path: router.NEWS,
+      element: <News/>
+    },
+    
     
   
   ]

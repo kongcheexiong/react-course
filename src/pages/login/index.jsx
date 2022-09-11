@@ -22,10 +22,16 @@ export default function Login() {
   const [role, setRole] = useState("none");
   const matches = useMediaQuery("(max-width:800px)");
 
+  const [isLoading, setIsLoading] = useState(false)
+  const [isErr , setIsErr] = useState(false)
+ 
+
   const token = localStorage.getItem("token");
 
   const handleLogin = async () => {
-     console.log(userId + password)
+    //  console.log(userId + password)
+    setIsErr(false)
+    setIsLoading(true)
     await axios
       .post(
         "http://127.0.0.1:8000/api/login",
@@ -42,7 +48,11 @@ export default function Login() {
         localStorage.setItem("name", `${res.data?.data[0]?.firstName} ${res.data?.data[0]?.lastName}`)
         navigate(router.DASHBOARD)
         console.log(res.data);
-      }).catch((err) => console.error(err));
+      }).catch((err) => {
+        setIsLoading(false)
+        setIsErr(true)
+        // alert("There is an error")
+        console.error(err)});
   };
   if (token) {
     return <Navigate to={router.DASHBOARD} />;
@@ -98,6 +108,9 @@ export default function Login() {
       >
         Don't have account?
       </a>
+      {
+        isLoading ? <span>Loging in...</span> : isErr ? <span>There is an err</span> : null
+      }
       <Button onClick={handleLogin} variant="contained">
         Login
       </Button>
