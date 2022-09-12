@@ -4,6 +4,7 @@ import {
   IconButton,
   TextField,
   InputAdornment,
+  Pagination,
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import * as react from "react";
@@ -14,8 +15,10 @@ import DialogContent from "@mui/material/DialogContent";
 // import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from "@mui/material/DialogTitle";
 
-import AddIcon from '@mui/icons-material/Add';
-import CachedIcon from '@mui/icons-material/Cached';
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import AddIcon from "@mui/icons-material/Add";
+import CachedIcon from "@mui/icons-material/Cached";
 import CircularProgress from "@mui/material/CircularProgress";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
@@ -33,9 +36,9 @@ export default function UserType() {
   const navigate = useNavigate();
 
   const inputRef = react.useRef(null);
-  const inputRef1 = react.useRef(null)
-  const updateRef = react.useRef(null)
-
+  const inputRef1 = react.useRef(null);
+  const updateRef = react.useRef(null);
+  const insertUserRef = react.useRef(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isErr, setErr] = useState(false);
@@ -50,23 +53,40 @@ export default function UserType() {
 
   const [updatedData, setupdatedData] = useState();
   const [popUpUpdate, setPopupUpdate] = useState(false);
+  const [totalUserType, setTotalUserType] = useState();
+  const [totalPage, setTotalPage] = useState(totalUserType / 5);
+  const [selectedPage, setSelectedPage] = useState(0);
 
-  const getAllusers = async () => {
+  // const [limit, setLimit] = useState(5)
+  const [isLess, setLess] = useState(true);
+
+  const getAllusers = async (props) => {
+
+    const { page = 0, limit = 5 } = props;
+    
     setIsLoading(true);
     setErr(false);
     await axios
-      .get(`${server_url}user-types`, {
+      .get(`${server_url}/user-types/skip/${page * limit}/limit/${limit}`, {
         headers: {
           authorization: localStorage.getItem("token"),
         },
         timeout: "10000",
       })
-      .then((res) => {
+      .then(async (res) => {
         console.log(res.data.data);
+        await setTotalUserType(res.data.total);
         setUserTypeData(res.data.data);
         setOriginalData(res.data.data);
         setErr(false);
         setIsLoading(false);
+
+        if (res.data.total / limit > Math.floor(res.data.total / limit)) {
+          console.log(Math.floor(res.data.total / limit) + 1);
+          setTotalPage(Math.floor(res.data.total / limit) + 1);
+        }else if(res.data.total / limit == Math.floor(res.data.total / limit)){
+          setTotalPage(Math.floor(res.data.total / limit));
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -93,6 +113,7 @@ export default function UserType() {
 
     axios(config)
       .then(function (response) {
+        setPopup(false);
         console.log(response.data);
       })
       .catch(function (error) {
@@ -137,7 +158,7 @@ export default function UserType() {
     };
     axios(config)
       .then(function (response) {
-         setPopupUpdate(false);
+        setPopupUpdate(false);
         getAllusers();
         alert(`userType updated successfully for user ${updatedData.id}`);
         console.log(response.data);
@@ -151,7 +172,13 @@ export default function UserType() {
       });
   };
 
-  const [originalData, setOriginalData] = useState()
+  const Paginations = [];
+
+  for (let i = 0; i < totalPage; i++) {
+    Paginations.push(i + 1);
+  }
+
+  const [originalData, setOriginalData] = useState();
 
   react.useEffect(() => {
     getAllusers();
@@ -163,8 +190,11 @@ export default function UserType() {
       <Stack direction="row" spacing={2}>
         {/**add new category */}
         <Button
-        startIcon={<AddIcon/>}
-          onClick={() => setPopup(true)}
+          startIcon={<AddIcon />}
+          onClick={async () => {
+            await setPopup(true);
+            insertUserRef.current.focus();
+          }}
           variant="contained"
           size="small"
           disableElevation
@@ -173,7 +203,7 @@ export default function UserType() {
         </Button>
         {/**reload */}
         <Button
-        startIcon={<CachedIcon/>}
+          startIcon={<CachedIcon />}
           onClick={getAllusers}
           variant="outlined"
           color="secondary"
@@ -189,16 +219,16 @@ export default function UserType() {
         {/**search */}
         <Stack alignItems="center" direction="row-reverse" spacing={1}>
           <TextField
-          onChange={ async (e)=>{
-            if(e.target.value == ""){
-               getAllusers()
-               return
-            }
-            let data = await originalData?.filter(x => x.typeName.includes(e.target.value));
-            setUserTypeData(data)
-
-          }}
-         
+            onChange={async (e) => {
+              if (e.target.value == "") {
+                getAllusers();
+                return;
+              }
+              let data = await originalData?.filter((x) =>
+                x.typeName.includes(e.target.value)
+              );
+              setUserTypeData(data);
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -246,79 +276,148 @@ export default function UserType() {
               border: "1px solid #F8F9FA",
               borderRadius: "5px",
               padding: "5px",
+              marginBottom: "50px",
             }}
           >
             <table>
               {/**table header */}
-              <tr>
-                <th>ລໍາດັບ</th>
-                <th>ລະຫັດປະເພດ</th>
-                <th>ຊື່ປະເພດ</th>
-                <th>ວັນທີ່ສ້າງລາຍການ</th>
-                <th
-                  style={{
-                    textAlign: "center",
-                  }}
-                >
-                  Action
-                </th>
-              </tr>
-              {userTypeData?.map((val, index) => {
-                return (
-                  <tr
-                    key={index}
+              <thead
+                style={{
+                  backgroundColor: "#BDBDBD",
+                }}
+              >
+                <tr>
+                  <th>ລໍາດັບ</th>
+                  <th>ລະຫັດປະເພດ</th>
+                  <th>ຊື່ປະເພດ</th>
+                  <th>ວັນທີ່ສ້າງລາຍການ</th>
+                  <th
                     style={{
-                     //  height: "25px",
+                      textAlign: "center",
                     }}
                   >
-                    <td>{index + 1}</td>
-                    <td>{val._id}</td>
-                    <td>{val.typeName}</td>
-                    <td>{format(new Date(val.createAt), "dd/MM/yyyy")}</td>
-                    <td
-                      style={{
-                        minWidth: "10px",
-                        maxWidth: "30px",
-                      }}
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {userTypeData?.map((val, index) => {
+                  return (
+                    <tr
+                      key={index}
+                      style={
+                        {
+                          //  height: "25px",
+                        }
+                      }
                     >
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        justifyContent="center"
+                      <td>{index + 1}</td>
+                      <td>{val._id}</td>
+                      <td>{val.typeName}</td>
+                      <td>{format(new Date(val.createAt), "dd/MM/yyyy")}</td>
+                      <td
+                        style={{
+                          minWidth: "10px",
+                          maxWidth: "30px",
+                        }}
                       >
-                        <IconButton
-                          onClick={() => {
-                            setDeletedId(val._id);
-                            setConfirmDelete(true);
-                          }}
-                          color="error"
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          justifyContent="center"
                         >
-                          <DeleteIcon />
-                        </IconButton>
-                        <IconButton
-                          onClick={ async() => {
-                           
-                            setupdatedData({
-                              id: val._id,
-                              typeName: val.typeName,
-                            });
-                           
-                            await setPopupUpdate(true);
-                            inputRef.current.focus();
-                            
-                          
-                           
-                          }}
-                          color="primary"
-                        >
-                          <BorderColorIcon />
-                        </IconButton>
-                      </Stack>
-                    </td>
-                  </tr>
+                          <IconButton
+                            onClick={() => {
+                              setDeletedId(val._id);
+                              setConfirmDelete(true);
+                            }}
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                          <IconButton
+                            onClick={async () => {
+                              setupdatedData({
+                                id: val._id,
+                                typeName: val.typeName,
+                              });
+
+                              await setPopupUpdate(true);
+                              inputRef.current.focus();
+                            }}
+                            color="primary"
+                          >
+                            <BorderColorIcon />
+                          </IconButton>
+                        </Stack>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot></tfoot>
+            </table>
+            {isLess ? (
+              <Stack>
+                <a
+                  className="viewmore"
+                  onClick={() => {
+                    
+                    setLess(false)
+                    getAllusers({
+                      limit: 10,
+                    });
+                  }}
+                >
+                  View more
+                </a>
+              </Stack>
+            ) : <Stack>
+            <a
+              className="viewmore"
+              onClick={() => {
+                // setLimit(10)
+                setLess(true)
+                getAllusers({
+                  limit: 5,
+                });
+              }}
+            >
+              View less
+            </a>
+          </Stack>}
+
+            <Stack
+              spacing={1}
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
+              marginTop="10px"
+            >
+              <IconButton size="small">{"<"}</IconButton>
+              {Paginations.map((value, index) => {
+                return (
+                  <IconButton
+                    color={index == selectedPage ? "info" : "default"}
+                    onClick={() => {
+                      setSelectedPage(index);
+                      getAllusers({
+                        page: index
+                      });
+                    }}
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: index == selectedPage ? "bold" : "normal",
+                    }}
+                  >
+                    {value}
+                  </IconButton>
                 );
               })}
-            </table>
+
+              <IconButton size="small">{">"}</IconButton>
+            </Stack>
           </div>
         )}
         {/**insert */}
@@ -326,8 +425,20 @@ export default function UserType() {
           <DialogTitle>ເພີ່ມປະເພດຜູ້ໃຊ້</DialogTitle>
           <DialogContent>
             <TextField
+              inputRef={insertUserRef}
               onChange={(e) => {
                 setNewUserType(e.target.value);
+              }}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  if (newUserType == "") {
+                    alert("please input the form properly");
+                    return;
+                  }
+                  insertUserType();
+
+                  getAllusers();
+                }
               }}
               placeholder="ປະເພດຜູ້ໃຊ້"
               sx={{
@@ -412,21 +523,14 @@ export default function UserType() {
           <DialogTitle>ແກ້ໄຂຂໍ້ມູນ</DialogTitle>
           <DialogContent>
             <TextField
-            
-            inputRef={inputRef}
-            onKeyDown={(e)=>{
-               if(e.key === "Enter"){
-                  
-                updateUserType();
-                console.log(popUpUpdate)
-
-                
-               
-               }
-
-            }}
+              inputRef={inputRef}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  updateUserType();
+                  console.log(popUpUpdate);
+                }
+              }}
               onChange={(e) => {
-               
                 setupdatedData({ ...updatedData, typeName: e.target.value });
               }}
               defaultValue={`${updatedData?.typeName}`}
@@ -442,7 +546,6 @@ export default function UserType() {
                 },
               }}
             />
-            
           </DialogContent>
           <DialogActions>
             <Button
@@ -455,12 +558,10 @@ export default function UserType() {
               ຍົກເລີກ
             </Button>
             <Button
-            
               onClick={() => {
-              
                 updateUserType();
 
-               //  setPopupUpdate(false);
+                //  setPopupUpdate(false);
               }}
               variant="contained"
               color="primary"

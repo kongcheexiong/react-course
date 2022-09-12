@@ -34,3 +34,13 @@
 
   }
 }
+
+.viewmore{
+  text-decoration: underline;
+  
+}
+.viewmore:hover{
+ color: red;
+ cursor: pointer;
+  
+}
