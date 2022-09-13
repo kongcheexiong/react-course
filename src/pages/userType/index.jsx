@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import * as react from "react";
-import { textFieldStyle } from "../../style";
+import { btnStyle, textFieldStyle } from "../../style";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -57,15 +57,16 @@ export default function UserType() {
   const [totalPage, setTotalPage] = useState(totalUserType / 5);
   const [selectedPage, setSelectedPage] = useState(0);
 
-  // const [limit, setLimit] = useState(5)
-  const [isLess, setLess] = useState(true);
+    const [limits, setLimit] = useState(5)
+  //  const [page ,setPage] = useState(0)
+ 
 
-  const getAllusers = async (props) => {
+  const getAllusers = async (page = 0, limit = 10) => {
+    //  const { page = 0, limit = 5 } = props;
 
-    const { page = 0, limit = 5 } = props;
-    
     setIsLoading(true);
     setErr(false);
+    console.log("get")
     await axios
       .get(`${server_url}/user-types/skip/${page * limit}/limit/${limit}`, {
         headers: {
@@ -73,9 +74,10 @@ export default function UserType() {
         },
         timeout: "10000",
       })
-      .then(async (res) => {
+      .then( (res) => {
+       
         console.log(res.data.data);
-        await setTotalUserType(res.data.total);
+        setTotalUserType(res.data.total);
         setUserTypeData(res.data.data);
         setOriginalData(res.data.data);
         setErr(false);
@@ -181,6 +183,8 @@ export default function UserType() {
   const [originalData, setOriginalData] = useState();
 
   react.useEffect(() => {
+    // setIsLoading(true)
+ 
     getAllusers();
   }, []);
 
@@ -190,6 +194,7 @@ export default function UserType() {
       <Stack direction="row" spacing={2}>
         {/**add new category */}
         <Button
+         sx= {{...btnStyle}}
           startIcon={<AddIcon />}
           onClick={async () => {
             await setPopup(true);
@@ -203,6 +208,7 @@ export default function UserType() {
         </Button>
         {/**reload */}
         <Button
+        sx= {{...btnStyle}}
           startIcon={<CachedIcon />}
           onClick={getAllusers}
           variant="outlined"
@@ -242,6 +248,7 @@ export default function UserType() {
               width: "200px",
               "& .MuiInputBase-root": {
                 height: "35px",
+                fontFamily: "Noto sans lao"
               },
               "& .MuiOutlinedInput-input": {
                 fontSize: "14px",
@@ -358,36 +365,7 @@ export default function UserType() {
               </tbody>
               <tfoot></tfoot>
             </table>
-            {isLess ? (
-              <Stack>
-                <a
-                  className="viewmore"
-                  onClick={() => {
-                    
-                    setLess(false)
-                    getAllusers({
-                      limit: 10,
-                    });
-                  }}
-                >
-                  View more
-                </a>
-              </Stack>
-            ) : <Stack>
-            <a
-              className="viewmore"
-              onClick={() => {
-                // setLimit(10)
-                setLess(true)
-                getAllusers({
-                  limit: 5,
-                });
-              }}
-            >
-              View less
-            </a>
-          </Stack>}
-
+           
             <Stack
               spacing={1}
               direction="row"
@@ -402,9 +380,7 @@ export default function UserType() {
                     color={index == selectedPage ? "info" : "default"}
                     onClick={() => {
                       setSelectedPage(index);
-                      getAllusers({
-                        page: index
-                      });
+                      getAllusers(index);
                     }}
                     sx={{
                       fontSize: "14px",
