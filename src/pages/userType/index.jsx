@@ -55,7 +55,7 @@ export default function UserType() {
   const [updatedData, setupdatedData] = useState();
   const [popUpUpdate, setPopupUpdate] = useState(false);
   const [totalUserType, setTotalUserType] = useState();
-  const [totalPage, setTotalPage] = useState(totalUserType / 5);
+  const [totalPage, setTotalPage] = useState();
   const [selectedPage, setSelectedPage] = useState(0);
 
     const [limits, setLimit] = useState(5)
@@ -69,7 +69,7 @@ export default function UserType() {
     setErr(false);
     console.log("get")
     await axios
-      .get(`${server_url}/user-types/skip/${page * limit}/limit/${limit}`, {
+      .get(`${server_url}/user-types/skip/${page * limit }/limit/${limit}`, {
         headers: {
           authorization: localStorage.getItem("token"),
         },
@@ -80,7 +80,7 @@ export default function UserType() {
         
        
         console.log(data);
-        setTotalUserType(res.data?.data?.total);
+        setTotalUserType(res.data?.total);
         setUserTypeData(data);
         if(!originalData){
           setOriginalData(data);
@@ -89,12 +89,16 @@ export default function UserType() {
         setErr(false);
         setIsLoading(false);
 
-        if (res.data.total / limit > Math.floor(res.data.total / limit)) {
-          console.log(Math.floor(res.data.total / limit) + 1);
-          setTotalPage(Math.floor(res.data.total / limit) + 1);
-        }else if(res.data.total / limit == Math.floor(res.data.total / limit)){
-          setTotalPage(Math.floor(res.data.total / limit));
-        }
+        
+        setTotalPage(Math.ceil(res.data.total / limit));
+
+
+        // if (res.data.total / limit > Math.floor(res.data.total / limit)) {
+        //   console.log(Math.floor(res.data.total / limit) + 1);
+        //   setTotalPage(Math.floor(res.data.total / limit) + 1);
+        // }else if(res.data.total / limit == Math.floor(res.data.total / limit)){
+        //   setTotalPage(Math.floor(res.data.total / limit));
+        // }
         
       })
       .catch((err) => {
@@ -184,8 +188,9 @@ export default function UserType() {
   const Paginations = [];
 
   for (let i = 0; i < totalPage; i++) {
-    Paginations.push(i + 1);
+    Paginations.push("2");
   }
+  //pagination = [2,2,2]
 
   const [originalData, setOriginalData] = useState();
 
@@ -300,9 +305,11 @@ export default function UserType() {
               spacing={1}
               direction="row"
               alignItems="center"
-              justifyContent="flex-end"
+              justifyContent="space-between"
               marginBottom="10px"
             >
+              <span>Total: {totalUserType} records</span>
+              <Stack direction='row'>
               <IconButton onClick={()=>{
                 if(selectedPage > 0){
                   getAllusers(selectedPage -1 )
@@ -311,8 +318,10 @@ export default function UserType() {
                
               }} size="small">{"<"}</IconButton>
               {Paginations.map((value, index) => {
+                // Paginations = [2,2,2]
                 return (
                   <IconButton
+                  // 2 = 1
                     color={index == selectedPage ? "info" : "default"}
                     onClick={() => {
                       setSelectedPage(index);
@@ -323,21 +332,22 @@ export default function UserType() {
                       fontWeight: index == selectedPage ? "bold" : "normal",
                     }}
                   >
-                    {value}
+                    {index +1}
                   </IconButton>
                 );
               })}
 
               <IconButton onClick={()=>{
-                
-                if(selectedPage < totalPage - 1){
+                if(selectedPage < totalPage - 1 ){
                   getAllusers(selectedPage +1)
                   setSelectedPage(selectedPage +1)
                 }
-                console.log(totalPage,selectedPage )
+                // console.log(totalPage,selectedPage )
                 
 
               }} size="small">{">"}</IconButton>
+
+              </Stack>
             </Stack>
             <table>
               {/**table header */}
@@ -347,7 +357,7 @@ export default function UserType() {
                 }}
               >
                 <tr className="tbBody">
-                  {/* <th>ລໍາດັບ</th> */}
+                  <th>ລໍາດັບ</th>
                   <th>ລະຫັດປະເພດ</th>
                   <th>ຊື່ປະເພດ</th>
                   <th>ວັນທີ່ສ້າງລາຍການ</th>
@@ -373,7 +383,8 @@ export default function UserType() {
                         }
                       }
                     >
-                      {/* <td>{val._index}</td> */}
+                    
+                      <td>{(selectedPage * 10 )+ index + 1}</td>
                       <td>{val._id}</td>
                       <td>{val.typeName}</td>
                       <td>{format(new Date(val.createAt), "dd/MM/yyyy")}</td>
@@ -498,6 +509,10 @@ export default function UserType() {
           </DialogContent>
           <DialogActions>
             <Button
+            sx={{
+              ...btnStyle
+
+            }}
               onClick={() => setConfirmDelete(false)}
               variant="contained"
               color="error"
