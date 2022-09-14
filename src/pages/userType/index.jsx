@@ -31,6 +31,7 @@ import { useState } from "react";
 
 import { format } from "date-fns";
 import { setLogger } from "react-query";
+import { RestaurantMenu } from "@mui/icons-material";
 
 export default function UserType() {
   const navigate = useNavigate();
@@ -75,11 +76,16 @@ export default function UserType() {
         timeout: "10000",
       })
       .then( (res) => {
+        let data = res.data?.data
+        
        
-        console.log(res.data.data);
-        setTotalUserType(res.data.total);
-        setUserTypeData(res.data.data);
-        setOriginalData(res.data.data);
+        console.log(data);
+        setTotalUserType(res.data?.data?.total);
+        setUserTypeData(data);
+        if(!originalData){
+          setOriginalData(data);
+        }
+        
         setErr(false);
         setIsLoading(false);
 
@@ -89,6 +95,7 @@ export default function UserType() {
         }else if(res.data.total / limit == Math.floor(res.data.total / limit)){
           setTotalPage(Math.floor(res.data.total / limit));
         }
+        
       })
       .catch((err) => {
         console.log(err);
@@ -210,7 +217,10 @@ export default function UserType() {
         <Button
         sx= {{...btnStyle}}
           startIcon={<CachedIcon />}
-          onClick={getAllusers}
+          onClick={()=>{
+            setSelectedPage(0)
+            getAllusers(0)
+          }}
           variant="outlined"
           color="secondary"
           size="small"
@@ -286,6 +296,49 @@ export default function UserType() {
               marginBottom: "50px",
             }}
           >
+              <Stack
+              spacing={1}
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
+              marginBottom="10px"
+            >
+              <IconButton onClick={()=>{
+                if(selectedPage > 0){
+                  getAllusers(selectedPage -1 )
+                  setSelectedPage(selectedPage -1 )
+                }
+               
+              }} size="small">{"<"}</IconButton>
+              {Paginations.map((value, index) => {
+                return (
+                  <IconButton
+                    color={index == selectedPage ? "info" : "default"}
+                    onClick={() => {
+                      setSelectedPage(index);
+                      getAllusers(index);
+                    }}
+                    sx={{
+                      fontSize: "14px",
+                      fontWeight: index == selectedPage ? "bold" : "normal",
+                    }}
+                  >
+                    {value}
+                  </IconButton>
+                );
+              })}
+
+              <IconButton onClick={()=>{
+                
+                if(selectedPage < totalPage - 1){
+                  getAllusers(selectedPage +1)
+                  setSelectedPage(selectedPage +1)
+                }
+                console.log(totalPage,selectedPage )
+                
+
+              }} size="small">{">"}</IconButton>
+            </Stack>
             <table>
               {/**table header */}
               <thead
@@ -293,8 +346,8 @@ export default function UserType() {
                   backgroundColor: "#BDBDBD",
                 }}
               >
-                <tr>
-                  <th>ລໍາດັບ</th>
+                <tr className="tbBody">
+                  {/* <th>ລໍາດັບ</th> */}
                   <th>ລະຫັດປະເພດ</th>
                   <th>ຊື່ປະເພດ</th>
                   <th>ວັນທີ່ສ້າງລາຍການ</th>
@@ -310,6 +363,7 @@ export default function UserType() {
 
               <tbody>
                 {userTypeData?.map((val, index) => {
+                 
                   return (
                     <tr
                       key={index}
@@ -319,7 +373,7 @@ export default function UserType() {
                         }
                       }
                     >
-                      <td>{index + 1}</td>
+                      {/* <td>{val._index}</td> */}
                       <td>{val._id}</td>
                       <td>{val.typeName}</td>
                       <td>{format(new Date(val.createAt), "dd/MM/yyyy")}</td>
@@ -366,41 +420,15 @@ export default function UserType() {
               <tfoot></tfoot>
             </table>
            
-            <Stack
-              spacing={1}
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-end"
-              marginTop="10px"
-            >
-              <IconButton size="small">{"<"}</IconButton>
-              {Paginations.map((value, index) => {
-                return (
-                  <IconButton
-                    color={index == selectedPage ? "info" : "default"}
-                    onClick={() => {
-                      setSelectedPage(index);
-                      getAllusers(index);
-                    }}
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: index == selectedPage ? "bold" : "normal",
-                    }}
-                  >
-                    {value}
-                  </IconButton>
-                );
-              })}
-
-              <IconButton size="small">{">"}</IconButton>
-            </Stack>
+          
           </div>
         )}
         {/**insert */}
         <Dialog open={isPopup} onClose={() => setPopup(!isPopup)}>
-          <DialogTitle>ເພີ່ມປະເພດຜູ້ໃຊ້</DialogTitle>
+          <DialogTitle sx={{fontFamily: "Noto sans lao"}}>ເພີ່ມປະເພດຜູ້ໃຊ້</DialogTitle>
           <DialogContent>
             <TextField
+           
               inputRef={insertUserRef}
               onChange={(e) => {
                 setNewUserType(e.target.value);
@@ -422,6 +450,7 @@ export default function UserType() {
                 width: "400px",
                 "& .MuiInputBase-root": {
                   height: "35px",
+                  fontFamily: "Noto sans lao"
                 },
                 "& .MuiOutlinedInput-input": {
                   fontSize: "14px",
@@ -460,7 +489,7 @@ export default function UserType() {
         </Dialog>
         {/**delelet */}
         <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
-          <DialogTitle>ຢືນຢັນ</DialogTitle>
+          <DialogTitle sx={{fontFamily: "Noto sans lao"}}>ຢືນຢັນ</DialogTitle>
           <DialogContent>
             <p>
               Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde,
@@ -496,7 +525,7 @@ export default function UserType() {
 
         {/**update */}
         <Dialog open={popUpUpdate} onClose={() => setPopupUpdate(false)}>
-          <DialogTitle>ແກ້ໄຂຂໍ້ມູນ</DialogTitle>
+          <DialogTitle sx={{fontFamily: "Noto sans lao"}}> ແກ້ໄຂຂໍ້ມູນ</DialogTitle>
           <DialogContent>
             <TextField
               inputRef={inputRef}
