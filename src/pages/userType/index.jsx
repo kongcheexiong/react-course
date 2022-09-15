@@ -471,6 +471,7 @@ export default function UserType() {
           </DialogContent>
           <DialogActions>
             <Button
+            sx={{...btnStyle}}
               onClick={() => setPopup(false)}
               variant="contained"
               color="error"
@@ -480,6 +481,7 @@ export default function UserType() {
               ຍົກເລີກ
             </Button>
             <Button
+            sx={{...btnStyle}}
               onClick={() => {
                 if (newUserType == "") {
                   alert("please input the form properly");
@@ -511,7 +513,6 @@ export default function UserType() {
             <Button
             sx={{
               ...btnStyle
-
             }}
               onClick={() => setConfirmDelete(false)}
               variant="contained"
@@ -522,6 +523,9 @@ export default function UserType() {
               ຍົກເລີກ
             </Button>
             <Button
+            sx={{
+              ...btnStyle
+            }}
               onClick={() => {
                 deleteUserType(deletedId);
                 setConfirmDelete(false);

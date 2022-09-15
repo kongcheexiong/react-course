@@ -3,7 +3,12 @@ export const textFieldStyle = {
     backgroundColor: "white",
   
     "& .MuiInputBase-root": {
-      fontFamily: "Noto sans lao",
+      height: "35px",
+      fontFamily: "Noto sans lao"
+    },
+    "& .MuiOutlinedInput-input": {
+      fontSize: "14px",
+      padding: "6px",
     },
     
 }
@@ -12,13 +17,13 @@ export const btnStyle = {
   "&.MuiButton-root": {
     fontFamily: "Noto Sans Lao",
   },
-  "&.MuiButton-text": {
-    color: ``,
-  },
-  "&.MuiButton-contained": {
-    color: ``,
-  },
-  "&.MuiButton-outlined": {
-    color: ``,
-  },
+  // "&.MuiButton-text": {
+  //   color: ``,
+  // },
+  // "&.MuiButton-contained": {
+  //   color: ``,
+  // },
+  // "&.MuiButton-outlined": {
+  //   color: ``,
+  // },
 };
