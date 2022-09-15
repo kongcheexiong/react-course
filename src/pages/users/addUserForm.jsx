@@ -1,7 +1,7 @@
 import { Button, Divider, MenuItem, Select, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
-import React from "react";
+import React, { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DenyBtn, OkBtn } from "../../components/components";
@@ -11,9 +11,10 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 export default function AddUserForm() {
   const [type, setType] = useState();
+  const imgRef = useRef(null);
 
-  const [loading, setloading ]= useState(false)
-  const [success, setSuccess]= useState(false)
+  const [loading, setloading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const getUserType = async () => {
     await axios
@@ -31,8 +32,6 @@ export default function AddUserForm() {
         console.log(err);
       });
   };
-  
-
 
   const [userData, setUserData] = useState({
     userId: "",
@@ -45,8 +44,8 @@ export default function AddUserForm() {
   const [image, setImage] = useState();
 
   const handleSubmit = async () => {
-    setloading(true)
-    setSuccess(false)
+    setloading(true);
+    setSuccess(false);
     var formData = new FormData();
     await formData.append("userId", userData.userId);
     await formData.append("password", userData.password);
@@ -78,8 +77,8 @@ export default function AddUserForm() {
     axios(config)
       .then(function (response) {
         console.log(JSON.stringify(response.data));
-        setloading(false)
-        setSuccess(true)
+        setloading(false);
+        setSuccess(true);
       })
       .catch(function (error) {
         console.log(error);
@@ -95,7 +94,51 @@ export default function AddUserForm() {
       {/**form */}
       <Divider />
       <Stack marginTop="30px" spacing={2}>
-        {/**user id */}
+        <Stack
+          direction="row"
+          width="100%"
+          //   justifyContent="space-between"
+          alignItems="flex-start"
+          spacing={10}
+        >
+          <label>ຮູບ</label>
+          {image?.length > 0 ? (
+            <img
+              onClick={() => {
+                imgRef.current.click();
+              }}
+              style={{
+                cursor: "pointer",
+                borderRadius: "10px",
+                height: "100px",
+                width: "100px",
+              }}
+              src={`${URL.createObjectURL(image[0])}`}
+              alt="sdafsd"
+            />
+          ) : (
+            <div
+              onClick={() => {
+                imgRef.current.click();
+              }}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                borderRadius: "10px",
+                height: "100px",
+                width: "100px",
+                alignItems: "center",
+                justifyContent: "center",
+
+                backgroundColor: "#F8F9FA",
+              }}
+            >
+              <CameraAltIcon color="primary" />
+            </div>
+          )}
+        </Stack>
+
         <Stack
           direction="row"
           width="100%"
@@ -148,11 +191,11 @@ export default function AddUserForm() {
         >
           <label>ລະຫັດຜ່ານ</label>
           <TextField
-          onKeyPress={(e)=>{
-            if(e.key === "Enter"){
-                alert("dsaf")
-            }
-          }}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                alert("dsaf");
+              }
+            }}
             onChange={(e) => {
               setUserData({ ...userData, password: e.target.value });
             }}
@@ -198,57 +241,12 @@ export default function AddUserForm() {
             })}
           </Select>
         </Stack>
-        <Stack
-          direction="row"
-          width="100%"
-          //   justifyContent="space-between"
-          alignItems="center"
-          spacing={10}
-        >
-          <label>ຮູບ</label>
-          {/* <Button
-            startIcon={<CameraAltIcon />}
-            sx={{ ...btnStyle }}
-            variant="contained"
-            component="label"
-            // color="error"
-            size="small"
-            disableElevation
-            onChange={(e)=>{
-                console.log(e.target.files)
 
-            }}
-          >
-            upload
-            <input  type="file" hidden />
-          </Button> */}
-          <input
-            accept="image/png, image/jpeg"
-            style={{ width: "200px" }}
-            // name="filefield"
-            type="file"
-            onChange={(event) => {
-              event.preventDefault();
-              const file = event.target.files;
-              console.log(file);
-              setImage(file);
-              //   setFiles(file);
-              //console.log(file)
-              //const frmdata = new FormData();
-              //   const fileImage = [];
-              //   for (var x = 0; x < file.length; x++) {
-              //     //  frmdata.append("file", file[x]);
-              //     fileImage.push(file[x].name);
-              //   }
-              //   setData({ ...data, images: fileImage });
-            }}
-          />
-         
-          
-        </Stack>
-        {
-            loading ? <span>ກຳລັງສ້າງຂໍ້ມູນ...</span> : success ? <span>ສ້າງຂໍ້ມູນສໍາເລັດ</span> : null
-        }
+        {loading ? (
+          <span>ກຳລັງສ້າງຂໍ້ມູນ...</span>
+        ) : success ? (
+          <span>ສ້າງຂໍ້ມູນສໍາເລັດ</span>
+        ) : null}
         <Stack
           direction="row"
           spacing={2}
@@ -264,12 +262,19 @@ export default function AddUserForm() {
           />
           <DenyBtn _title="ຍົກເລີກ" _onClick={() => {}} />
         </Stack>
-        {
-            image?.length >0 ? <img style={{
-                height: '100px'
-            }} src={`G:/myDoc/pic/${image[0]?.name}`} alt = "sdafsd"/>: null
-          }
       </Stack>
+      <input
+        hidden
+        ref={imgRef}
+        accept="image/png, image/jpeg"
+        type="file"
+        onChange={(event) => {
+          event.preventDefault();
+          const file = event.target.files;
+          console.log(file);
+          setImage(file);
+        }}
+      />
     </Stack>
   );
 }
