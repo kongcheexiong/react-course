@@ -119,6 +119,7 @@ export default function UserType() {
     var config = {
       method: "post",
       url: `${server_url}userType/insert?typeName=${newUserType}`,
+     
       headers: {
         authorization: localStorage.getItem("token"),
       },

@@ -21,6 +21,7 @@ import Dashboard from "./pages/dashboard";
 import UserType from "./pages/userType";
 import NewsCategory from "./pages/newsCategory";
 import News from "./pages/news";
+import AddUserForm from "./pages/users/addUserForm";
 
 const App = () => {
   const privateRoute = [
@@ -44,9 +45,6 @@ const App = () => {
       path: router.NEWS,
       element: <News/>
     },
-    
-    
-  
   ]
    
 
@@ -72,6 +70,18 @@ const App = () => {
                 </ProtectedRoute>
               }/>
             })
+          }
+          
+          
+        </Route>
+        <Route element={<MyDashboradLayOut />}>
+          {
+            <Route path={`${router.USERS}/add-user`} element={
+                <ProtectedRoute>
+                 <AddUserForm/>
+                </ProtectedRoute>
+              }/>
+           
           }
           
           

@@ -23,6 +23,35 @@ export const AddNewBtn = (props) => {
 
   </Button>
 }
+export const DenyBtn = (props) => {
+  const { _title, _onClick } = props
+  return <Button
+    sx={{ ...btnStyle }}
+    // startIcon={<DeleteIcon />}
+    onClick={_onClick}
+    variant="contained"
+    color="error"
+    size="small"
+    disableElevation>
+      {_title}
+
+  </Button>
+}
+export const OkBtn = (props) => {
+  const { _title, _onClick } = props
+  return <Button
+    sx={{ ...btnStyle }}
+    // startIcon={<DeleteIcon />}
+    onClick={_onClick}
+    variant="contained"
+    color="success"
+    size="small"
+    disableElevation>
+      {_title}
+
+  </Button>
+}
+
 
 export const ReloadBtn = (props) => {
   const { _title = "reload", _onClick } = props
@@ -38,3 +67,5 @@ export const ReloadBtn = (props) => {
 
 </Button>
 }
+
+

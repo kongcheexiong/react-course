@@ -11,12 +11,17 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SearchIcon from "@mui/icons-material/Search";
 import { AddNewBtn, ReloadBtn } from "../../components/components";
 import axios from "axios";
-import { server_url } from "../../constants";
+import { router, server_url } from "../../constants";
 import { useState } from "react";
 import { useEffect } from "react";
 import { format } from "date-fns";
 
+import { useNavigate } from "react-router-dom";
+
 export default function Users() {
+  const navigate = useNavigate()
+
+
   const [userData, setUserData] = useState();
   const getAllusers = async () => {
     axios
@@ -41,7 +46,10 @@ export default function Users() {
   return (
     <Stack spacing={2}>
       <Stack direction="row" spacing={1}>
-        <AddNewBtn _onClick={() => {}} _title="ເພີ່ມຜູ້ໃຊ້" />
+        <AddNewBtn _onClick={() => {
+          navigate(`${router.USERS}/add-user`)
+
+        }} _title="ເພີ່ມຜູ້ໃຊ້" />
         <ReloadBtn _onClick={() => {}} />
       </Stack>
       <Divider />
