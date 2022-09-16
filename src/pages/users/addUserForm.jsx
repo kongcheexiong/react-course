@@ -5,16 +5,26 @@ import React, { useRef } from "react";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DenyBtn, OkBtn } from "../../components/components";
-import { server_url } from "../../constants";
+import { router, server_url } from "../../constants";
 import { btnStyle, textFieldStyle } from "../../style";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
+import { useNavigate } from "react-router-dom";
+
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+// import { format } from "date-fns";
+
 export default function AddUserForm() {
+  const navigate = useNavigate();
   const [type, setType] = useState();
   const imgRef = useRef(null);
+  const dateRef = useRef(null);
 
   const [loading, setloading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [err, setErr] = useState(false);
 
   const getUserType = async () => {
     await axios
@@ -44,6 +54,7 @@ export default function AddUserForm() {
   const [image, setImage] = useState();
 
   const handleSubmit = async () => {
+    setErr(false);
     setloading(true);
     setSuccess(false);
     var formData = new FormData();
@@ -79,9 +90,13 @@ export default function AddUserForm() {
         console.log(JSON.stringify(response.data));
         setloading(false);
         setSuccess(true);
+        setErr(false);
       })
       .catch(function (error) {
         console.log(error);
+        setErr(true);
+        setloading(false);
+        setSuccess(false);
       });
   };
 
@@ -207,16 +222,39 @@ export default function AddUserForm() {
           direction="row"
           width="100%"
           justifyContent="space-between"
+          //   spacing="15px"
           alignItems="center"
         >
           <label>ວັນເດືອນປີເກີດ</label>
-          <TextField
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <DatePicker
+            //   label="Basic example"
+              // value={value}
+              inputFormat="dd/MM/yyyy"
+              value={userData.dateOfBirth}
+              onChange={(newValue) => {
+                console.log(newValue)
+                setUserData({...userData, dateOfBirth: newValue})
+              }}
+              
+              renderInput={(params) => (
+                <TextField
+                  sx={{ ...textFieldStyle, width: "90%" }}
+                  {...params}
+                />
+              )}
+            />
+          </LocalizationProvider>
+
+          {/* <TextField
+        //   disabled
+            onClick={()=> dateRef.current.click()}
             onChange={(e) => {
               setUserData({ ...userData, dateOfBirth: e.target.value });
             }}
             placeholder="ດດ/ວວ/ປປປປ"
-            sx={{ ...textFieldStyle, width: "90%" }}
-          />
+            sx={{ ...textFieldStyle, width: "90%", cursor: "pointer" }}
+          /> */}
         </Stack>
         <Stack
           direction="row"
@@ -243,9 +281,15 @@ export default function AddUserForm() {
         </Stack>
 
         {loading ? (
-          <span>ກຳລັງສ້າງຂໍ້ມູນ...</span>
+          <span style={{ color: "green", alignSelf: "end" }}>
+            ກຳລັງສ້າງຂໍ້ມູນ...
+          </span>
         ) : success ? (
-          <span>ສ້າງຂໍ້ມູນສໍາເລັດ</span>
+          <span style={{ color: "green", alignSelf: "end" }}>
+            ສ້າງຂໍ້ມູນສໍາເລັດ
+          </span>
+        ) : err ? (
+          <span style={{ color: "red", alignSelf: "end" }}>ເກີດຂໍ້ຜິດພາດ</span>
         ) : null}
         <Stack
           direction="row"
@@ -257,10 +301,23 @@ export default function AddUserForm() {
             _title="ຕົກລົງ"
             _onClick={() => {
               // console.log(userData)
+              if (typeof image === "undefined") {
+                alert("select image ?");
+                return;
+              }
+              if (userData.firstName == "") {
+                alert("input name");
+                return;
+              }
               handleSubmit();
             }}
           />
-          <DenyBtn _title="ຍົກເລີກ" _onClick={() => {}} />
+          <DenyBtn
+            _title="ຍົກເລີກ"
+            _onClick={() => {
+              navigate(`${router.USERS}`);
+            }}
+          />
         </Stack>
       </Stack>
       <input
@@ -273,6 +330,7 @@ export default function AddUserForm() {
           const file = event.target.files;
           console.log(file);
           setImage(file);
+          //   console.log(`${URL.createObjectURL(file[0])}`)
         }}
       />
     </Stack>

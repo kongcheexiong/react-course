@@ -5,20 +5,21 @@ import "./index.css";
 import { PersonProvider } from "./contexts/Person.provider";
 import { EmployeeProvider } from "./contexts/employee.provider";
 
-import {QueryClient, QueryClientProvider} from 'react-query'
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ConfirmProvider } from "./contexts/confirDialog.provider";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-    <EmployeeProvider>
-      <PersonProvider>
-        <App />
-      </PersonProvider>
-    </EmployeeProvider>
-
+      <ConfirmProvider>
+        <EmployeeProvider>
+          <PersonProvider>
+            <App />
+          </PersonProvider>
+        </EmployeeProvider>
+      </ConfirmProvider>
     </QueryClientProvider>
-   
   </React.StrictMode>
 );

@@ -1,6 +1,6 @@
 import { Button, Divider, IconButton, TextField } from "@mui/material";
 import { Stack } from "@mui/system";
-import React from "react";
+
 import { btnStyle, textFieldStyle } from "../../style";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -9,21 +9,31 @@ import CircularProgress from "@mui/material/CircularProgress";
 import DeleteIcon from "@mui/icons-material/Delete";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SearchIcon from "@mui/icons-material/Search";
-import { AddNewBtn, ReloadBtn } from "../../components/components";
+import { AddNewBtn, ConfirmDialog, ReloadArea, ReloadBtn } from "../../components/components";
 import axios from "axios";
 import { router, server_url } from "../../constants";
 import { useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { format } from "date-fns";
 
 import { useNavigate } from "react-router-dom";
+import {useQuery} from "react-query"
+import { fetchUsers } from "../../api";
+import { ConfirmContext } from "../../contexts/confirDialog.provider";
 
 export default function Users() {
-  const navigate = useNavigate()
 
+  const { confirmPopUp, setConfirmPopUp } = useContext(ConfirmContext)
+
+
+  const navigate = useNavigate()
+  const {data, status} = useQuery("users", fetchUsers)
+
+  const [loading , setLoading] = useState(false)
 
   const [userData, setUserData] = useState();
   const getAllusers = async () => {
+    setLoading(true)
     axios
       .get(`${server_url}all-user`, {
         headers: {
@@ -32,6 +42,7 @@ export default function Users() {
         timeout: 10000,
       })
       .then((res) => {
+        setLoading(false)
         console.log(res.data?.data.users);
         setUserData(res.data?.data.users);
       })
@@ -39,18 +50,24 @@ export default function Users() {
         console.log(err);
       });
   };
+  const deleteUser = async ()=>{
+
+  }
 
   useEffect(() => {
+    console.log("data=====>",data)
     getAllusers();
   }, []);
   return (
     <Stack spacing={2}>
+      <ConfirmDialog _onOk= {()=>{deleteUser()}}/>
       <Stack direction="row" spacing={1}>
+
         <AddNewBtn _onClick={() => {
           navigate(`${router.USERS}/add-user`)
 
         }} _title="ເພີ່ມຜູ້ໃຊ້" />
-        <ReloadBtn _onClick={() => {}} />
+        <ReloadBtn _onClick={() => {getAllusers()}} />
       </Stack>
       <Divider />
       <Stack spacing={2}>
@@ -58,7 +75,8 @@ export default function Users() {
           <label htmlFor="">ຄົ້ນຫາ</label>
           <TextField sx={{ ...textFieldStyle, width: "200px" }} />
         </Stack>
-        <div
+        {
+          loading ? <ReloadArea/> :  <div
           style={{
             border: "1px solid #F8F9FA",
             borderRadius: "5px",
@@ -117,7 +135,10 @@ export default function Users() {
                         spacing={1}
                         justifyContent="center"
                       >
-                        <IconButton onClick={() => {}} color="error">
+                        <IconButton onClick={() => {
+                          setConfirmPopUp(true)
+
+                        }} color="error">
                           <DeleteIcon />
                         </IconButton>
                       
@@ -133,6 +154,8 @@ export default function Users() {
             <tfoot></tfoot>
           </table>
         </div>
+        }
+       
       </Stack>
     </Stack>
   );

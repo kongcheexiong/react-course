@@ -32,6 +32,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { setLogger } from "react-query";
 import { RestaurantMenu } from "@mui/icons-material";
+import { ReloadArea } from "../../components/components";
 
 export default function UserType() {
   const navigate = useNavigate();
@@ -119,7 +120,6 @@ export default function UserType() {
     var config = {
       method: "post",
       url: `${server_url}userType/insert?typeName=${newUserType}`,
-     
       headers: {
         authorization: localStorage.getItem("token"),
       },
@@ -276,21 +276,7 @@ export default function UserType() {
         </Stack>
         {/**table */}
         {isLoading ? (
-          <div
-            style={{
-              height: "400px",
-              width: "100%",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              // backgroundColor: 'red',
-
-              alignSelf: "center",
-            }}
-          >
-            <CircularProgress />
-          </div>
+          <ReloadArea/>
         ) : isErr ? (
           <>There is an error </>
         ) : (

@@ -1,9 +1,19 @@
 import axios from "axios";
+import { server_url } from "../constants";
 // create instance for axios
 const instance = axios.create({
-  baseURL: "https://fakestoreapi.com/",
+  baseURL: `${server_url}`,
   timeout: 1000,
+  headers:{
+    authorization: localStorage.getItem("token")
+  }
 });
+
+export const fetchUsers = async () =>{
+  const {data} = await instance.get(`all-user`)
+  return data
+}
+
 // fetch all data 
 export const fetchDogs = async () => {
   const path = location.pathname.split("/");

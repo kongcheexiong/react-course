@@ -27,28 +27,26 @@ const App = () => {
   const privateRoute = [
     {
       path: router.DASHBOARD,
-      element: <Dashboard/>
+      element: <Dashboard />,
     },
     {
       path: router.USERS,
-      element: <Users/>
+      element: <Users />,
     },
     {
       path: router.USERTYPE,
-      element: <UserType/>
+      element: <UserType />,
     },
     {
       path: router.NEWSCATEGORY,
-      element: <NewsCategory/>
+      element: <NewsCategory />,
     },
     {
       path: router.NEWS,
-      element: <News/>
+      element: <News />,
     },
-  ]
-   
+  ];
 
-  
   return (
     <BrowserRouter>
       <Routes>
@@ -62,29 +60,27 @@ const App = () => {
         {/** */}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route element={<MyDashboradLayOut />}>
-          {
-            privateRoute.map((val, index)=>{
-              return <Route key={index} path={val.path} element={
-                <ProtectedRoute>
-                  {val.element}
-                </ProtectedRoute>
-              }/>
-            })
-          }
-          
-          
+          {privateRoute.map((val, index) => {
+            return (
+              <Route
+                key={index}
+                path={val.path}
+                element={<ProtectedRoute>{val.element}</ProtectedRoute>}
+              />
+            );
+          })}
         </Route>
         <Route element={<MyDashboradLayOut />}>
           {
-            <Route path={`${router.USERS}/add-user`} element={
+            <Route
+              path={`${router.USERS}/add-user`}
+              element={
                 <ProtectedRoute>
-                 <AddUserForm/>
+                  <AddUserForm />
                 </ProtectedRoute>
-              }/>
-           
+              }
+            />
           }
-          
-          
         </Route>
 
         {/*        
