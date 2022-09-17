@@ -9,7 +9,7 @@ import { router, server_url } from "../../constants";
 import { btnStyle, textFieldStyle } from "../../style";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -17,6 +17,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 // import { format } from "date-fns";
 
 export default function AddUserForm() {
+  const { state } = useLocation();
+
   const navigate = useNavigate();
   const [type, setType] = useState();
   const imgRef = useRef(null);
@@ -43,14 +45,16 @@ export default function AddUserForm() {
       });
   };
 
-  const [userData, setUserData] = useState({
-    userId: "",
-    password: "",
-    firstName: "",
-    lastName: "",
-    dateOfBirth: "",
-    type: "",
-  });
+  const [userData, setUserData] = useState(
+    state || {
+      userId: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      dateOfBirth: "",
+      type: "",
+    }
+  );
   const [image, setImage] = useState();
 
   const handleSubmit = async () => {
@@ -65,16 +69,6 @@ export default function AddUserForm() {
     await formData.append("dateOfBirth", userData.dateOfBirth);
     await formData.append("type", userData.type);
     await formData.append("image", image[0]);
-    // await axios
-    //   .post(`${server_url}user/insert`, {
-    //     formData,
-    //     timeout: 10000,
-    //     headers: {
-    //       authorization: localStorage.getItem("token"),
-    //     },
-    //   })
-    //   .then((res) => console.log(res.data))
-    //   .catch((err) => console.log(err));
 
     var config = {
       method: "post",
@@ -100,7 +94,55 @@ export default function AddUserForm() {
       });
   };
 
+  const updateUser = async () => {
+    setErr(false);
+    setloading(true);
+    setSuccess(false);
+    var formData = new FormData();
+    await formData.append("userId", userData.userId);
+    await formData.append("password", userData.password);
+    await formData.append("firstName", userData.firstName);
+    await formData.append("lastName", userData.lastName);
+    await formData.append("dateOfBirth", userData.dateOfBirth);
+    await formData.append("type", userData.type);
+    await formData.append("image", image[0]);
+    await formData.append("old_img", state.image);
+
+
+    var config = {
+      method: "put",
+      url: "http://127.0.0.1:8000/api/user/update",
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+      data: formData,
+    };
+
+    axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+        setloading(false);
+        setSuccess(true);
+        setErr(false);
+      })
+      .catch(function (error) {
+        console.log(error);
+        setErr(true);
+        setloading(false);
+        setSuccess(false);
+      });
+
+    await axios
+      .put()
+      .then(() => {})
+      .catch(() => {});
+  };
+
   useEffect(() => {
+    if (state) {
+      console.log(state);
+    }
+
     getUserType();
   }, []);
   return (
@@ -117,7 +159,7 @@ export default function AddUserForm() {
           spacing={10}
         >
           <label>ຮູບ</label>
-          {image?.length > 0 ? (
+          {image?.length > 0 || state ? (
             <img
               onClick={() => {
                 imgRef.current.click();
@@ -128,7 +170,11 @@ export default function AddUserForm() {
                 height: "100px",
                 width: "100px",
               }}
-              src={`${URL.createObjectURL(image[0])}`}
+              src={
+                image?.length > 0
+                  ? `${URL.createObjectURL(image[0])}`
+                  : `${server_url}image/?name=${state.image}`
+              }
               alt="sdafsd"
             />
           ) : (
@@ -162,6 +208,7 @@ export default function AddUserForm() {
         >
           <label>ລະຫັດຜູ້ໃຊ້</label>
           <TextField
+            defaultValue={userData.userId}
             onChange={(e) => {
               setUserData({ ...userData, userId: e.target.value });
             }}
@@ -177,6 +224,7 @@ export default function AddUserForm() {
         >
           <label>ຊື່</label>
           <TextField
+            defaultValue={userData.firstName}
             onChange={(e) => {
               setUserData({ ...userData, firstName: e.target.value });
             }}
@@ -192,6 +240,7 @@ export default function AddUserForm() {
         >
           <label>ນາມສະກຸນ</label>
           <TextField
+            defaultValue={userData.lastName}
             onChange={(e) => {
               setUserData({ ...userData, lastName: e.target.value });
             }}
@@ -228,15 +277,14 @@ export default function AddUserForm() {
           <label>ວັນເດືອນປີເກີດ</label>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-            //   label="Basic example"
+              //   label="Basic example"
               // value={value}
               inputFormat="dd/MM/yyyy"
               value={userData.dateOfBirth}
               onChange={(newValue) => {
-                console.log(newValue)
-                setUserData({...userData, dateOfBirth: newValue})
+                console.log(newValue);
+                setUserData({ ...userData, dateOfBirth: newValue });
               }}
-              
               renderInput={(params) => (
                 <TextField
                   sx={{ ...textFieldStyle, width: "90%" }}
@@ -265,6 +313,7 @@ export default function AddUserForm() {
           <label>ປະເພດຜູ້ໃຊ້</label>
           {/* <TextField sx={{ ...textFieldStyle, width: "90%" }} /> */}
           <Select
+            defaultValue={userData.type}
             onChange={(e) => {
               setUserData({ ...userData, type: e.target.value });
             }}
@@ -307,6 +356,10 @@ export default function AddUserForm() {
               }
               if (userData.firstName == "") {
                 alert("input name");
+                return;
+              }
+              if (state) {
+                updateUser();
                 return;
               }
               handleSubmit();

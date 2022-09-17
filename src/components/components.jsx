@@ -1,7 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import * as react from "react"
 
-
 import AddIcon from "@mui/icons-material/Add";
 import CachedIcon from "@mui/icons-material/Cached";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -10,7 +9,6 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SearchIcon from "@mui/icons-material/Search";
 import { btnStyle } from "../style";
 import { ConfirmContext } from "../contexts/confirDialog.provider";
-
 
 export const AddNewBtn = (props) => {
   const { _title, _onClick } = props
@@ -118,7 +116,7 @@ export const ConfirmDialog = (props)=>{
       ...btnStyle
     }}
       onClick={() => {
-        
+        _onOk()
       }}
       variant="contained"
       color="primary"
