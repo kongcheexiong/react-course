@@ -1,4 +1,11 @@
-import { Button, Divider, MenuItem, Select, TextField } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Divider,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import axios from "axios";
 import React, { useRef } from "react";
@@ -14,10 +21,13 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 // import { format } from "date-fns";
 
 export default function AddUserForm() {
   const { state } = useLocation();
+
+  const [check , setCheck]= useState(false)
 
   const navigate = useNavigate();
   const [type, setType] = useState();
@@ -99,15 +109,23 @@ export default function AddUserForm() {
     setloading(true);
     setSuccess(false);
     var formData = new FormData();
+    await formData.append("_id", state._id);
     await formData.append("userId", userData.userId);
-    await formData.append("password", userData.password);
+    if(check){
+        await formData.append("password", userData.password);
+    }
+    
     await formData.append("firstName", userData.firstName);
     await formData.append("lastName", userData.lastName);
     await formData.append("dateOfBirth", userData.dateOfBirth);
     await formData.append("type", userData.type);
-    await formData.append("image", image[0]);
+    if (image?.length > 0) {
+      await formData.append("image", image[0]);
+    }
+
     await formData.append("old_img", state.image);
 
+    console.log(formData);
 
     var config = {
       method: "put",
@@ -147,7 +165,7 @@ export default function AddUserForm() {
   }, []);
   return (
     <Stack spacing={0} marginBottom="100px">
-      <h3>ເພີ່ມປະເພດຜູ້ໃຊ້</h3>
+      {state ? <h3>ແກ້ໄຂຂໍ້ມູນຜູ້ໃຊ້</h3> : <h3>ເພີ່ມຂໍ້ມູນຜູ້ໃຊ້</h3>}
       {/**form */}
       <Divider />
       <Stack marginTop="30px" spacing={2}>
@@ -247,25 +265,27 @@ export default function AddUserForm() {
             sx={{ ...textFieldStyle, width: "90%" }}
           />
         </Stack>
-        <Stack
-          direction="row"
-          width="100%"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <label>ລະຫັດຜ່ານ</label>
-          <TextField
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                alert("dsaf");
-              }
-            }}
-            onChange={(e) => {
-              setUserData({ ...userData, password: e.target.value });
-            }}
-            sx={{ ...textFieldStyle, width: "90%" }}
-          />
-        </Stack>
+        {!state ? (
+          <Stack
+            direction="row"
+            width="100%"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <label>ລະຫັດຜ່ານ</label>
+            <TextField
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  alert("dsaf");
+                }
+              }}
+              onChange={(e) => {
+                setUserData({ ...userData, password: e.target.value });
+              }}
+              sx={{ ...textFieldStyle, width: "90%" }}
+            />
+          </Stack>
+        ) : null}
 
         <Stack
           direction="row"
@@ -328,6 +348,35 @@ export default function AddUserForm() {
             })}
           </Select>
         </Stack>
+        <Stack direction="row" justifyContent="flex-start" alignItems= "center">
+          <Checkbox checked={check} onChange={()=>{
+            setCheck(!check)
+
+          }}/>
+          <label htmlFor="">ແກ້ໄຂລະຫັດຜ່ານ</label>
+        </Stack>
+        {
+            check ? <Stack
+            direction="row"
+            width="100%"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <label>ລະຫັດຜ່ານ</label>
+            <TextField
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  alert("dsaf");
+                }
+              }}
+              onChange={(e) => {
+                setUserData({ ...userData, password: e.target.value });
+              }}
+              sx={{ ...textFieldStyle, width: "90%" }}
+            />
+          </Stack> : null
+        }
+        
 
         {loading ? (
           <span style={{ color: "green", alignSelf: "end" }}>
@@ -350,18 +399,19 @@ export default function AddUserForm() {
             _title="ຕົກລົງ"
             _onClick={() => {
               // console.log(userData)
-              if (typeof image === "undefined") {
-                alert("select image ?");
+              if (state) {
+                updateUser();
                 return;
               }
               if (userData.firstName == "") {
                 alert("input name");
                 return;
               }
-              if (state) {
-                updateUser();
+              if (typeof image === "undefined") {
+                alert("select image ?");
                 return;
               }
+
               handleSubmit();
             }}
           />

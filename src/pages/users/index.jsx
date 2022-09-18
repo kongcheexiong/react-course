@@ -41,12 +41,14 @@ export default function Users() {
   const [userData, setUserData] = useState();
 
   const [deletedId, setDeletedId] = useState();
+
+  const [searchUserId, setSearchUerId] = useState();
   const getAllusers = async () => {
     // console.log("data====>", data);
     // setUserData(res.data?.data.users);
-    setLoading(true)
+    setLoading(true);
 
-    setLoading(true)
+    setLoading(true);
     await axios
       .get(`${server_url}all-user`, {
         headers: {
@@ -55,7 +57,7 @@ export default function Users() {
         timeout: 10000,
       })
       .then((res) => {
-        setLoading(false)
+        setLoading(false);
         console.log(res.data?.data.users);
         setUserData(res.data?.data.users);
       })
@@ -67,17 +69,31 @@ export default function Users() {
     await axios
       .delete(`${server_url}user/delete/id/${deletedId}`, {
         headers: {
-          authorization: localStorage.getItem("token")
-        }
+          authorization: localStorage.getItem("token"),
+        },
       })
       .then((res) => {
-        console.log(res.data)
-        getAllusers()
-        setConfirmPopUp(false)
+        console.log(res.data);
+        getAllusers();
+        setConfirmPopUp(false);
         // refetch()
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
+      });
+  };
+
+  const serchUser = async () => {
+    await axios
+      .get(`${server_url}user/user-id/${searchUserId}`)
+      .then((res) => {
+        console.log();
+        setLoading(false);
+
+        setUserData(res.data?.data.users);
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 
@@ -89,7 +105,6 @@ export default function Users() {
       <ConfirmDialog
         _onOk={() => {
           deleteUser();
-
         }}
       />
       <Stack direction="row" spacing={1}>
@@ -101,7 +116,6 @@ export default function Users() {
         />
         <ReloadBtn
           _onClick={() => {
-           
             getAllusers();
           }}
         />
@@ -110,7 +124,19 @@ export default function Users() {
       <Stack spacing={2}>
         <Stack alignItems="center" direction="row" alignSelf="end" spacing={1}>
           <label htmlFor="">ຄົ້ນຫາ</label>
-          <TextField sx={{ ...textFieldStyle, width: "200px" }} />
+          <TextField placeholder="ລະຫັດຜູ້ໃຊ້, ຊື່ຜູ້ໃຊ້" sx={{ ...textFieldStyle, width: "200px" }} onChange={(e)=>{
+            setSearchUerId(e.target.value)
+          }} onKeyDown={(e)=>{
+            if(e.key === "Enter"){
+              if(searchUserId == ""){
+                getAllusers()
+                return
+              }
+              serchUser()
+            }
+          }}
+          
+          />
         </Stack>
         {loading ? (
           <ReloadArea />
@@ -146,7 +172,9 @@ export default function Users() {
               <tbody>
                 {userData?.map((val, index) => {
                   return (
-                    <tr key={index}>
+                    <tr key={index} style={{
+                      // fontSize: "12px"
+                    }}>
                       <td>{index + 1}</td>
                       <td>
                         <img
@@ -175,10 +203,12 @@ export default function Users() {
                           spacing={1}
                           justifyContent="center"
                         >
+                         
+
                           <IconButton
                             onClick={() => {
-                              setDeletedId(val._id)
-                              console.log(val._id)
+                              setDeletedId(val._id);
+                              console.log(val._id);
                               setConfirmPopUp(true);
                             }}
                             color="error"
@@ -186,12 +216,15 @@ export default function Users() {
                             <DeleteIcon />
                           </IconButton>
 
-                          <IconButton onClick={async () => {
-                            // setUpdatedUser(val)
-                            navigate(`${router.USERS}/add-user`, {
-                              state: {...val, type: val.type._id}
-                            })
-                          }} color="primary">
+                          <IconButton
+                            onClick={async () => {
+                              // setUpdatedUser(val)
+                              navigate(`${router.USERS}/add-user`, {
+                                state: { ...val, type: val.type._id },
+                              });
+                            }}
+                            color="primary"
+                          >
                             <BorderColorIcon />
                           </IconButton>
                         </Stack>
