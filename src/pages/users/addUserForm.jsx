@@ -172,9 +172,9 @@ export default function AddUserForm() {
         <Stack
           direction="row"
           width="100%"
-          //   justifyContent="space-between"
+           justifyContent="space-between"
           alignItems="flex-start"
-          spacing={10}
+          
         >
           <label>ຮູບ</label>
           {image?.length > 0 || state ? (

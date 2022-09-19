@@ -13,7 +13,7 @@ import Dogs from "./pages/dogs";
 import ProtectedRoute from "./routes/protectedRoute";
 
 // layout
-import DashboardLauOut from "./layouts/dashborad.layout";
+// import DashboardLauOut from "./layouts/dashborad.layout";
 import MyDashboradLayOut from "./layouts/MyDashboradLayOut";
 // pages
 import Users from "./pages/users";

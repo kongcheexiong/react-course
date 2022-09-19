@@ -1,24 +1,27 @@
 import { display } from "@mui/system";
-import React from "react";
+import * as React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { font, router } from "../constants";
 import "./sideNav.css";
 
 //icon
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import GroupIcon from '@mui/icons-material/Group';
-import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
-import NewspaperIcon from '@mui/icons-material/Newspaper';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import GroupIcon from "@mui/icons-material/Group";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import NewspaperIcon from "@mui/icons-material/Newspaper";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
-import { Avatar, Divider, Stack,IconButton, Badge } from "@mui/material";
+import { Avatar, Divider, Stack, IconButton, Badge } from "@mui/material";
 
 export default function MyDashboradLayOut() {
- 
+  const [collape, setCollape] = React.useState(false);
+
   const navigate = useNavigate();
-   const sideNavData = [
+  const sideNavData = [
     {
       name: "ໜ້າຫຼັກ",
       icon: <DashboardIcon fontSize="small" />,
@@ -44,14 +47,13 @@ export default function MyDashboradLayOut() {
       icon: <NewspaperIcon fontSize="small" />,
       router: `${router.NEWS}`,
     },
-
-  ]
+  ];
   return (
     <div>
       {/** this is side nav */}
       <div>
-        <nav>
-          <ul>
+        <nav > 
+          <ul className={collape && "open"}> 
             {/** side nav header and logo name*/}
             <div
               style={{
@@ -75,12 +77,12 @@ export default function MyDashboradLayOut() {
                 Logo
               </h1>
             </div>
-            <Divider/>
+            <Divider />
             {/**side nav menu */}
 
             <div
               style={{
-                marginTop: '20px',
+                marginTop: "20px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -88,7 +90,7 @@ export default function MyDashboradLayOut() {
               }}
             >
               {/* user menu */}
-               <div>
+              <div>
                 {sideNavData?.map((data, index) => {
                   return (
                     <a
@@ -116,171 +118,22 @@ export default function MyDashboradLayOut() {
                             paddingRight: "30px",
                           }}
                         >
-                          <Stack direction="row" alignItems='center' spacing={1}>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={1}
+                          >
                             <div>{data?.icon}</div>
                             <div>{data?.name}</div>
                           </Stack>
-                          
                         </Stack>
                       </Stack>
                     </a>
                   );
                 })}
               </div>
+
               
-              {/* <List
-                sx={{
-                  width: "100%",
-                  maxWidth: 360,
-                }}
-                component="nav"
-              >
-                {materialNavData?.map((val, idx) => {
-                  if (val.access.includes(userRole)) {
-                    return (
-                      <>
-                        <ListItemButton
-                          key={idx}
-                          sx={{
-                            backgroundColor:
-                              location.pathname.split("/")[1] ===
-                              val?.router?.split("/")[1]
-                                ? "#F8F9FA"
-                                : `rgba(255, 255, 255, 1)`,
-                          }}
-                          onClick={() => {
-                            if (val.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ") {
-                              setOpen(!open);
-                              setOpenService(false);
-                            }
-                            if (val.name == "ບໍລິການ") {
-                              setOpenService(!openService);
-                              setOpen(false);
-                            }
-                            if (val.router) {
-                              navigate(val?.router);
-                              setOpen(false);
-                              setOpenService(false);
-                            }
-                          }}
-                          // key={idx}
-                        >
-                          <ListItemIcon>{val.icon}</ListItemIcon>
-                          <ListItemText
-                            primary={
-                              <span
-                                style={{
-                                  fontFamily: `${font.LAO_FONT}`,
-                                  fontSize: "14px",
-                                }}
-                              >
-                                {val.name}
-                              </span>
-                            }
-                          />
-                          {val.sub ? (
-                            val.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ" ? (
-                              open ? (
-                                <ExpandLess />
-                              ) : (
-                                <ExpandMore />
-                              )
-                            ) : val.name == "ບໍລິການ" ? (
-                              openService ? (
-                                <ExpandLess />
-                              ) : (
-                                <ExpandMore />
-                              )
-                            ) : null
-                          ) : null}
-                        </ListItemButton>
-                        {val.name == "ບໍລິການ" ? (
-                          <Collapse
-                            in={openService}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            {val?.sub?.map((data, index) => {
-                              return (
-                                <List
-                                  key={index}
-                                  component="div"
-                                  disablePadding
-                                >
-                                  <ListItemButton
-                                    onClick={() => navigate(data.router)}
-                                    sx={{
-                                      pl: 4,
-                                      backgroundColor:
-                                        location.pathname.split("/")[1] ===
-                                        data?.router?.split("/")[1]
-                                          ? "#F8F9FA"
-                                          : `rgba(255, 255, 255, 1)`,
-                                    }}
-                                  >
-                                    <ListItemIcon>{data.icon}</ListItemIcon>
-                                    <ListItemText
-                                      primary={
-                                        <span
-                                          style={{
-                                            fontFamily: `${font.LAO_FONT}`,
-                                            fontSize: "14px",
-                                          }}
-                                        >
-                                          {data.name}
-                                        </span>
-                                      }
-                                    />
-                                  </ListItemButton>
-                                </List>
-                              );
-                            })}
-                          </Collapse>
-                        ) : val.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ" ? (
-                          <Collapse in={open} timeout="auto" unmountOnExit>
-                            {val?.sub?.map((data, index) => {
-                              if(data?.access.includes(userRole))
-                              return (
-                                <List
-                                  key={index}
-                                  component="div"
-                                  disablePadding
-                                >
-                                  <ListItemButton
-                                    onClick={() => navigate(data.router)}
-                                    sx={{
-                                      pl: 4,
-                                      backgroundColor:
-                                        location.pathname.split("/")[1] ===
-                                        data?.router?.split("/")[1]
-                                          ? "#F8F9FA"
-                                          : `rgba(255, 255, 255, 1)`,
-                                    }}
-                                  >
-                                    <ListItemIcon>{data.icon}</ListItemIcon>
-                                    <ListItemText
-                                      primary={
-                                        <span
-                                          style={{
-                                            fontFamily: `${font.LAO_FONT}`,
-                                            fontSize: "14px",
-                                          }}
-                                        >
-                                          {data.name}
-                                        </span>
-                                      }
-                                    />
-                                  </ListItemButton>
-                                </List>
-                              );
-                            })}
-                          </Collapse>
-                        ) : null}
-                      </>
-                    );
-                  }
-                })}
-              </List> */}
 
               {/** log out menu */}
               <div>
@@ -303,28 +156,44 @@ export default function MyDashboradLayOut() {
         </nav>
       </div>
       {/*** this is header layout */}
-      <div style={{ marginLeft: "280px" }}>
+      <div
+       className={collape ? "body open " : "body"}
+      >
         <Stack
-          direction="row-reverse"
+          direction="row"
+          justifyContent="space-between"
           alignItems="center"
           spacing={3}
           sx={{
             backgroundColor: "#F8F9FA",
             height: "60px",
-            paddingRight: "30px",
+            padding: "0px 30px",
           }}
         >
+          <Stack>
+            <IconButton
+              onClick={() => {
+                setCollape((collape) => !collape);
+              }}
+            >
+              {
+                collape ? <KeyboardArrowRightIcon/> : <KeyboardArrowLeftIcon/>
+              }
+              
+              
+
+            </IconButton>
+          </Stack>
           <Stack direction="row-reverse" spacing={0} alignItems="center">
             {/**profile */}
-            
-              <IconButton onClick={() => {}}>
-                <Avatar
-                  alt="Remy Sharp"
-                  //src="/static/images/avatar/1.jpg"
-                  sx={{ width: 30, height: 30 }}
-                />
-              </IconButton>
-           
+
+            <IconButton onClick={() => {}}>
+              <Avatar
+                alt="Remy Sharp"
+                //src="/static/images/avatar/1.jpg"
+                sx={{ width: 30, height: 30 }}
+              />
+            </IconButton>
 
             {/**name */}
             <span
@@ -334,9 +203,6 @@ export default function MyDashboradLayOut() {
               {localStorage.getItem("name")}
             </span>
           </Stack>
-
-          
-        
         </Stack>
         <div style={{ margin: "30px 30px", padding: "", backgroundColor: "" }}>
           <Outlet />
@@ -344,6 +210,4 @@ export default function MyDashboradLayOut() {
       </div>
     </div>
   );
-
-
 }

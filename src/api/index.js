@@ -1,9 +1,9 @@
 import axios from "axios";
 import { server_url } from "../constants";
 // create instance for axios
-const instance = axios.create({
+export const instance = axios.create({
   baseURL: `${server_url}`,
-  timeout: 1000,
+  timeout: 10000,
   headers:{
     authorization: localStorage.getItem("token")
   }
