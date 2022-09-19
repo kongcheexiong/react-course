@@ -80,12 +80,11 @@ export default function NewsCategory() {
   };
   const deleteData = async () => {
     await instance
-      .delete(`news-cate/deletes`,{
-         id: deletedId
-      })
+      .delete(`news-cate/delete/id/${deletedId}`,)
       .then((res) => {
         console.log(res.data);
         setValue(value+1)
+        setConfirmPopUp(false)
       })
       .catch((err) => {
         console.log(err);
