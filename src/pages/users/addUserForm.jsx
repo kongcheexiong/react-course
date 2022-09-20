@@ -177,6 +177,7 @@ export default function AddUserForm() {
           
         >
           <label>ຮູບ</label>
+          <Stack width="90%" direction = "row">
           {image?.length > 0 || state ? (
             <img
               onClick={() => {
@@ -216,6 +217,9 @@ export default function AddUserForm() {
               <CameraAltIcon color="primary" />
             </div>
           )}
+
+          </Stack>
+        
         </Stack>
 
         <Stack
@@ -348,13 +352,16 @@ export default function AddUserForm() {
             })}
           </Select>
         </Stack>
-        <Stack direction="row" justifyContent="flex-start" alignItems= "center">
-          <Checkbox checked={check} onChange={()=>{
-            setCheck(!check)
-
-          }}/>
-          <label htmlFor="">ແກ້ໄຂລະຫັດຜ່ານ</label>
-        </Stack>
+        {
+            state ?   <Stack direction="row" justifyContent="flex-start" alignItems= "center">
+            <Checkbox checked={check} onChange={()=>{
+              setCheck(!check)
+  
+            }}/>
+            <label htmlFor="">ແກ້ໄຂລະຫັດຜ່ານ</label>
+          </Stack> : null
+        }
+      
         {
             check ? <Stack
             direction="row"

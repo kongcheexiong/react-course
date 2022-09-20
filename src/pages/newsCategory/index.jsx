@@ -10,7 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import axios from "axios";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import * as React from "react";
 import { instance } from "../../api";
 import {
@@ -28,6 +28,7 @@ import { ConfirmContext } from "../../contexts/confirDialog.provider";
 import { textFieldStyle } from "../../style";
 
 export default function NewsCategory() {
+  const inputRef = React.useRef(null);
   const [newsCateData, setNewCateData] = React.useState();
 
   const [popUp, setPopup] = React.useState(false);
@@ -38,9 +39,12 @@ export default function NewsCategory() {
   const [success, setSuccess] = React.useState(false);
   const [err, setErr] = React.useState(false);
 
-  const { confirmPopUp, setConfirmPopUp } = React.useContext(ConfirmContext)
+  const { confirmPopUp, setConfirmPopUp } = React.useContext(ConfirmContext);
 
-  const [deletedId, setDeletedId] = React.useState("")
+  const [deletedId, setDeletedId] = React.useState("");
+  const [updatedData, setUpdatedData] = React.useState(null);
+
+  const [search, setSearch] = React.useState("");
   const createType = async () => {
     if (newType == "") {
       alert("input news Category");
@@ -63,8 +67,8 @@ export default function NewsCategory() {
     setLoading(true);
     setSuccess(false);
     setErr(false);
-    instance
-      .get("news-cate/all")
+    await instance
+      .get(`news-cate/all`)
       .then((res) => {
         setLoading(false);
         setSuccess(true);
@@ -80,35 +84,90 @@ export default function NewsCategory() {
   };
   const deleteData = async () => {
     await instance
-      .delete(`news-cate/delete/id/${deletedId}`,)
+      .delete(`news-cate/delete/id/${deletedId}`)
       .then((res) => {
         console.log(res.data);
-        setValue(value+1)
-        setConfirmPopUp(false)
+        setValue(value + 1);
+        setConfirmPopUp(false);
       })
       .catch((err) => {
         console.log(err);
       });
   };
+  const updateNewsData = async () => {
+    await instance
+      .put("news-cate/update", {
+        id: updatedData?._id,
+        name: updatedData?.typeName,
+      })
+      .then((res) => {
+        console.log(res);
+        setPopup(false);
+        setValue(value + 1);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const searchData = async () => {
+   setLoading(true);
+    setSuccess(false);
+    setErr(false);
+    await instance
+      .get(`news-cate/type-name/${search}`)
+      .then((res) => {
+        setLoading(false);
+        setSuccess(true);
+        setErr(false);
+        setNewCateData(res.data?.data);
+      })
+      .catch((err) => {
+        setErr(true);
+        setLoading(false);
+        setSuccess(false);
+        console.log(err);
+      });
+  };
+
   React.useEffect(() => {
     getData();
   }, [value]);
 
   return (
     <Stack spacing={2}>
-      <ConfirmDialog _onOk={()=>{deleteData()}}/>
-      <Dialog open={popUp} onClose={() => setPopup(false)}>
+      <ConfirmDialog
+        _onOk={() => {
+          deleteData();
+        }}
+      />
+      <Dialog
+        open={popUp}
+        onClose={() => {
+          setUpdatedData(null);
+          setPopup(false);
+        }}
+      >
         <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>
-          ເພີ່ມປະເພດຂ່າວສານ
+          {updatedData == null ? "ເພີ່ມປະເພດຂ່າວສານ" : "ແກ້ໄຂປະເພດຂ່າວສານ"}
         </DialogTitle>
         <DialogContent>
           <TextField
+            inputRef={inputRef}
+            defaultValue={updatedData == null ? "" : updatedData.typeName}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
+                if (updatedData != null) {
+                  updateNewsData();
+                  return;
+                }
                 createType();
               }
             }}
-            onChange={(e) => setNewType(e.target.value)}
+            onChange={(e) => {
+              setUpdatedData({ ...updatedData, typeName: e.target.value });
+              setNewType(e.target.value);
+            }}
             sx={{ ...textFieldStyle, width: "400px" }}
             placeholder="ຊື່ປະເພດຂ່າວສານ"
           />
@@ -116,10 +175,19 @@ export default function NewsCategory() {
         <DialogActions>
           <OkBtn
             _onClick={() => {
+              if (updatedData != null) {
+                updateNewsData();
+                return;
+              }
               createType();
             }}
           />
-          <DenyBtn _onClick={() => setPopup(false)} />
+          <DenyBtn
+            _onClick={() => {
+              setUpdatedData(null);
+              setPopup(false);
+            }}
+          />
         </DialogActions>
       </Dialog>
 
@@ -127,7 +195,10 @@ export default function NewsCategory() {
       <Stack direction="row" spacing={2}>
         <AddNewBtn
           _title={"ເພີ່ມປະເພດຂ່າວສານ"}
-          _onClick={() => setPopup(true)}
+          _onClick={async () => {
+            await setPopup(true);
+            await inputRef.current.focus();
+          }}
         />
         <ReloadBtn _onClick={() => setValue(value + 1)} />
       </Stack>
@@ -135,7 +206,27 @@ export default function NewsCategory() {
       {/**search */}
       <Stack spacing={1} direction="row" alignSelf={"end"} alignItems="center">
         <label>ຄົ້ນຫາ:</label>
-        <TextField sx={{ ...textFieldStyle }} />
+        <TextField
+          sx={{ ...textFieldStyle }}
+          onChange={async (e) => {
+            await setSearch(e.target.value);
+            if (e.target.value == "") {
+              getData();
+              return;
+            }
+          }}
+          onKeyDown={(e) => {
+           
+            if (e.key == "Enter") {
+               console.log(e.key)
+              if (search == "") {
+                getData();
+                return;
+              }
+              searchData();
+            }
+          }}
+        />
       </Stack>
       {/**table */}
       {loading ? (
@@ -152,7 +243,11 @@ export default function NewsCategory() {
           }}
         >
           <table>
-            <thead>
+            <thead
+              style={{
+                backgroundColor: "#BDBDBD",
+              }}
+            >
               <th>ລໍາດັບ</th>
               <th>ລະຫັດ</th>
               <th>ຊື່</th>
@@ -168,13 +263,23 @@ export default function NewsCategory() {
                     <td>{val.typeName}</td>
                     <td>{format(new Date(val.createAt), "dd/MM/yyyy")}</td>
                     <td>
-                      <IconButton color="primary">
+                      <IconButton
+                        color="primary"
+                        onClick={() => {
+                          setUpdatedData(val);
+                          setPopup(true);
+                        }}
+                      >
                         <IconEdit />
                       </IconButton>
-                      <IconButton color="error" onClick={()=> {
-                        setDeletedId(val._id)
-                        
-                        setConfirmPopUp(true)}}>
+                      <IconButton
+                        color="error"
+                        onClick={() => {
+                          setDeletedId(val._id);
+
+                          setConfirmPopUp(true);
+                        }}
+                      >
                         <IconDelete />
                       </IconButton>
                     </td>
