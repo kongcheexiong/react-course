@@ -5,9 +5,12 @@ import {
   TextField,
   InputAdornment,
   Pagination,
+  MenuItem,
+  Menu,
+  Select,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import * as react from "react";
+import React, * as react from "react";
 import { btnStyle, textFieldStyle } from "../../style";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -37,6 +40,8 @@ import { ReloadArea } from "../../components/components";
 export default function UserType() {
   const navigate = useNavigate();
 
+ 
+
   const inputRef = react.useRef(null);
   const inputRef1 = react.useRef(null);
   const updateRef = react.useRef(null);
@@ -59,40 +64,37 @@ export default function UserType() {
   const [totalPage, setTotalPage] = useState();
   const [selectedPage, setSelectedPage] = useState(0);
 
-    const [limits, setLimit] = useState(5)
+  const [limits, setLimit] = useState(5);
   //  const [page ,setPage] = useState(0)
- 
+  const rowPerPages = [5, 10, 15, 20];
 
-  const getAllusers = async (page = 0, limit = 10) => {
+  const getAllusers = async (page = 0, limit = limits) => {
     //  const { page = 0, limit = 5 } = props;
 
     setIsLoading(true);
     setErr(false);
-    console.log("get")
+    console.log("get");
     await axios
-      .get(`${server_url}/user-types/skip/${page * limit }/limit/${limit}`, {
+      .get(`${server_url}/user-types/skip/${page * limit}/limit/${limit}`, {
         headers: {
           authorization: localStorage.getItem("token"),
         },
         timeout: "10000",
       })
-      .then( (res) => {
-        let data = res.data?.data
-        
-       
+      .then((res) => {
+        let data = res.data?.data;
+
         console.log(data);
         setTotalUserType(res.data?.total);
         setUserTypeData(data);
-        if(!originalData){
+        if (!originalData) {
           setOriginalData(data);
         }
-        
+
         setErr(false);
         setIsLoading(false);
 
-        
         setTotalPage(Math.ceil(res.data.total / limit));
-
 
         // if (res.data.total / limit > Math.floor(res.data.total / limit)) {
         //   console.log(Math.floor(res.data.total / limit) + 1);
@@ -100,7 +102,6 @@ export default function UserType() {
         // }else if(res.data.total / limit == Math.floor(res.data.total / limit)){
         //   setTotalPage(Math.floor(res.data.total / limit));
         // }
-        
       })
       .catch((err) => {
         console.log(err);
@@ -197,9 +198,9 @@ export default function UserType() {
 
   react.useEffect(() => {
     // setIsLoading(true)
- 
+
     getAllusers();
-  }, []);
+  }, [limits]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -207,7 +208,7 @@ export default function UserType() {
       <Stack direction="row" spacing={2}>
         {/**add new category */}
         <Button
-         sx= {{...btnStyle}}
+          sx={{ ...btnStyle }}
           startIcon={<AddIcon />}
           onClick={async () => {
             await setPopup(true);
@@ -221,11 +222,11 @@ export default function UserType() {
         </Button>
         {/**reload */}
         <Button
-        sx= {{...btnStyle}}
+          sx={{ ...btnStyle }}
           startIcon={<CachedIcon />}
-          onClick={()=>{
-            setSelectedPage(0)
-            getAllusers(0)
+          onClick={() => {
+            setSelectedPage(0);
+            getAllusers(0);
           }}
           variant="outlined"
           color="secondary"
@@ -264,7 +265,7 @@ export default function UserType() {
               width: "200px",
               "& .MuiInputBase-root": {
                 height: "35px",
-                fontFamily: "Noto sans lao"
+                fontFamily: "Noto sans lao",
               },
               "& .MuiOutlinedInput-input": {
                 fontSize: "14px",
@@ -276,7 +277,7 @@ export default function UserType() {
         </Stack>
         {/**table */}
         {isLoading ? (
-          <ReloadArea/>
+          <ReloadArea />
         ) : isErr ? (
           <>There is an error </>
         ) : (
@@ -288,52 +289,78 @@ export default function UserType() {
               marginBottom: "50px",
             }}
           >
-              <Stack
+            <Stack
               spacing={1}
               direction="row"
               alignItems="center"
               justifyContent="space-between"
               marginBottom="10px"
             >
-              <span>Total: {totalUserType} records</span>
-              <Stack direction='row'>
-              <IconButton onClick={()=>{
-                if(selectedPage > 0){
-                  getAllusers(selectedPage -1 )
-                  setSelectedPage(selectedPage -1 )
-                }
-               
-              }} size="small">{"<"}</IconButton>
-              {Paginations.map((value, index) => {
-                // Paginations = [2,2,2]
-                return (
-                  <IconButton
-                  // 2 = 1
-                    color={index == selectedPage ? "info" : "default"}
-                    onClick={() => {
-                      setSelectedPage(index);
-                      getAllusers(index);
-                    }}
-                    sx={{
-                      fontSize: "14px",
-                      fontWeight: index == selectedPage ? "bold" : "normal",
-                    }}
+              <Stack direction="row" spacing={2}>
+                <span>Total: {totalUserType} records</span>
+                <Divider orientation="vertical" flexItem/>
+                <Stack direction={"row"} spacing={2}>
+                  <span>ຈໍານວນຂໍ້ມູນ</span>
+                  <Select
+                    sx={{...textFieldStyle}}
+                    
+                    variant="standard"
+                    value={limits}
+                   
+                    onChange={(e)=>{ 
+
+                      setLimit(e.target.value)}}
                   >
-                    {index +1}
-                  </IconButton>
-                );
-              })}
+                    <MenuItem value={5}>5</MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={15}>15</MenuItem>
+                  </Select>
+                </Stack>
+              </Stack>
+              <Stack direction="row">
+                <IconButton
+                  onClick={() => {
+                    if (selectedPage > 0) {
+                      getAllusers(selectedPage - 1);
+                      setSelectedPage(selectedPage - 1);
+                    }
+                  }}
+                  size="small"
+                >
+                  {"<"}
+                </IconButton>
+                {Paginations?.map((value, index) => {
+                  // Paginations = [2,2,2]
+                  return (
+                    <IconButton
+                      // 2 = 1
+                      color={index == selectedPage ? "info" : "default"}
+                      onClick={() => {
+                        setSelectedPage(index);
+                        getAllusers(index);
+                      }}
+                      sx={{
+                        fontSize: "14px",
+                        fontWeight: index == selectedPage ? "bold" : "normal",
+                      }}
+                    >
+                      {index + 1}
+                    </IconButton>
+                  );
+                })}
 
-              <IconButton onClick={()=>{
-                if(selectedPage < totalPage - 1 ){
-                  getAllusers(selectedPage +1)
-                  setSelectedPage(selectedPage +1)
-                }
-                // console.log(totalPage,selectedPage )
-                
-
-              }} size="small">{">"}</IconButton>
-
+                <IconButton
+                  onClick={() => {
+                    if (selectedPage < totalPage - 1) {
+                      getAllusers(selectedPage + 1);
+                      setSelectedPage(selectedPage + 1);
+                    }
+                    // console.log(totalPage,selectedPage )
+                  }}
+                  size="small"
+                >
+                  {">"}
+                </IconButton>
               </Stack>
             </Stack>
             <table>
@@ -360,7 +387,6 @@ export default function UserType() {
 
               <tbody>
                 {userTypeData?.map((val, index) => {
-                 
                   return (
                     <tr
                       key={index}
@@ -370,8 +396,7 @@ export default function UserType() {
                         }
                       }
                     >
-                    
-                      <td>{(selectedPage * 10 )+ index + 1}</td>
+                      <td>{selectedPage * 10 + index + 1}</td>
                       <td>{val._id}</td>
                       <td>{val.typeName}</td>
                       <td>{format(new Date(val.createAt), "dd/MM/yyyy")}</td>
@@ -417,16 +442,15 @@ export default function UserType() {
               </tbody>
               <tfoot></tfoot>
             </table>
-           
-          
           </div>
         )}
         {/**insert */}
         <Dialog open={isPopup} onClose={() => setPopup(!isPopup)}>
-          <DialogTitle sx={{fontFamily: "Noto sans lao"}}>ເພີ່ມປະເພດຜູ້ໃຊ້</DialogTitle>
+          <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>
+            ເພີ່ມປະເພດຜູ້ໃຊ້
+          </DialogTitle>
           <DialogContent>
             <TextField
-           
               inputRef={insertUserRef}
               onChange={(e) => {
                 setNewUserType(e.target.value);
@@ -448,7 +472,7 @@ export default function UserType() {
                 width: "400px",
                 "& .MuiInputBase-root": {
                   height: "35px",
-                  fontFamily: "Noto sans lao"
+                  fontFamily: "Noto sans lao",
                 },
                 "& .MuiOutlinedInput-input": {
                   fontSize: "14px",
@@ -458,7 +482,7 @@ export default function UserType() {
           </DialogContent>
           <DialogActions>
             <Button
-            sx={{...btnStyle}}
+              sx={{ ...btnStyle }}
               onClick={() => setPopup(false)}
               variant="contained"
               color="error"
@@ -468,7 +492,7 @@ export default function UserType() {
               ຍົກເລີກ
             </Button>
             <Button
-            sx={{...btnStyle}}
+              sx={{ ...btnStyle }}
               onClick={() => {
                 if (newUserType == "") {
                   alert("please input the form properly");
@@ -489,7 +513,7 @@ export default function UserType() {
         </Dialog>
         {/**delelet */}
         <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)}>
-          <DialogTitle sx={{fontFamily: "Noto sans lao"}}>ຢືນຢັນ</DialogTitle>
+          <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>ຢືນຢັນ</DialogTitle>
           <DialogContent>
             <p>
               Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde,
@@ -498,9 +522,9 @@ export default function UserType() {
           </DialogContent>
           <DialogActions>
             <Button
-            sx={{
-              ...btnStyle
-            }}
+              sx={{
+                ...btnStyle,
+              }}
               onClick={() => setConfirmDelete(false)}
               variant="contained"
               color="error"
@@ -510,9 +534,9 @@ export default function UserType() {
               ຍົກເລີກ
             </Button>
             <Button
-            sx={{
-              ...btnStyle
-            }}
+              sx={{
+                ...btnStyle,
+              }}
               onClick={() => {
                 deleteUserType(deletedId);
                 setConfirmDelete(false);
@@ -531,7 +555,10 @@ export default function UserType() {
 
         {/**update */}
         <Dialog open={popUpUpdate} onClose={() => setPopupUpdate(false)}>
-          <DialogTitle sx={{fontFamily: "Noto sans lao"}}> ແກ້ໄຂຂໍ້ມູນ</DialogTitle>
+          <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>
+            {" "}
+            ແກ້ໄຂຂໍ້ມູນ
+          </DialogTitle>
           <DialogContent>
             <TextField
               inputRef={inputRef}

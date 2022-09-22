@@ -22,6 +22,7 @@ import UserType from "./pages/userType";
 import NewsCategory from "./pages/newsCategory";
 import News from "./pages/news";
 import AddUserForm from "./pages/users/addUserForm";
+import AddNews from "./pages/news/addNews";
 
 const App = () => {
   const privateRoute = [
@@ -77,6 +78,18 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <AddUserForm />
+                </ProtectedRoute>
+              }
+            />
+          }
+        </Route>
+        <Route element={<MyDashboradLayOut />}>
+          {
+            <Route
+              path={`${router.NEWS}/add-news`}
+              element={
+                <ProtectedRoute>
+                  <AddNews />
                 </ProtectedRoute>
               }
             />

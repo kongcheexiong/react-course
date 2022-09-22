@@ -111,7 +111,7 @@ export default function NewsCategory() {
   };
 
   const searchData = async () => {
-   setLoading(true);
+    setLoading(true);
     setSuccess(false);
     setErr(false);
     await instance
@@ -159,14 +159,18 @@ export default function NewsCategory() {
               if (e.key === "Enter") {
                 if (updatedData != null) {
                   updateNewsData();
+                  setUpdatedData(null)
                   return;
                 }
                 createType();
               }
             }}
             onChange={(e) => {
-              setUpdatedData({ ...updatedData, typeName: e.target.value });
-              setNewType(e.target.value);
+              if (updatedData) {
+                setUpdatedData({ ...updatedData, typeName: e.target.value });
+              } else {
+                setNewType(e.target.value);
+              }
             }}
             sx={{ ...textFieldStyle, width: "400px" }}
             placeholder="ຊື່ປະເພດຂ່າວສານ"
@@ -177,6 +181,7 @@ export default function NewsCategory() {
             _onClick={() => {
               if (updatedData != null) {
                 updateNewsData();
+                setUpdatedData(null)
                 return;
               }
               createType();
@@ -216,9 +221,8 @@ export default function NewsCategory() {
             }
           }}
           onKeyDown={(e) => {
-           
             if (e.key == "Enter") {
-               console.log(e.key)
+              console.log(e.key);
               if (search == "") {
                 getData();
                 return;
@@ -240,8 +244,12 @@ export default function NewsCategory() {
             borderRadius: "5px",
             padding: "5px",
             marginBottom: "50px",
+            display: 'flex',
+            flexDirection: "column",
+            rowGap: "5px"
           }}
         >
+          <span>Total: { newsCateData ? `${newsCateData?.length} rows` : `...`}  </span>
           <table>
             <thead
               style={{
