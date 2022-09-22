@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Chip,
   DialogContent,
   DialogTitle,
@@ -11,25 +12,42 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import * as React from "react";
-import { textFieldStyle } from "../../style";
+import { btnStyle, textFieldStyle } from "../../style";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { server_url } from "../../constants";
 import { instance } from "../../api";
+import { DenyBtn, OkBtn } from "../../components/components";
+import axios from "axios";
 
 export default function AddNews() {
   React.useEffect(() => {
     fetchUserType();
+    fetchNewsType();
   }, []);
   const myWidth = "88%";
   const arr = ["asd", "fgdfg", "wer"];
   const [userType, setUserType] = React.useState([]);
+  const [newsType, setNewsType] = React.useState([]);
+
+  const [title, setTitle] = React.useState("");
+  const [body, setBody] = React.useState("");
+
+  //   const [a, setA] = React.useState(10)
+  const fileRef = React.useRef();
 
   const [selectedUserType, setSelectedUserType] = React.useState([]);
-  const [SeletectedUserTypeId, setSeletectedUserTypeId] = React.useState([])
- 
+  const [SeletectedUserTypeId, setSeletectedUserTypeId] = React.useState([]);
+
+  const [selectedNewsType, setSelectedNewsType] = React.useState([]);
+  const [SeletectedNewsTypeId, setSeletectedNewsTypeId] = React.useState([]);
+
+  const [selectedDate, setSelectedDate] = React.useState("");
+  const [selectedFile, setSelectedFile] = React.useState("");
+  const [selectedFileName, setSelectdeFileName] = React.useState("");
+
   const fetchUserType = async () => {
     instance
       .get(`${server_url}/user-types/skip/0/limit/30`)
@@ -41,7 +59,53 @@ export default function AddNews() {
         console.log(err);
       });
   };
-  const fetchNewsType = async () => {};
+  const fetchNewsType = async () => {
+    await instance
+      .get(`news-cate/all`)
+      .then((res) => {
+        setNewsType(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const createNews = async () => {
+    let data = new FormData();
+    data.append("title", title);
+    data.append("body", body);
+
+    SeletectedUserTypeId.forEach(element => {
+      data.append("userType", element);
+    });
+
+    SeletectedNewsTypeId.forEach(element => {
+      data.append("newsType", element);
+    });
+    // data.append("userType", SeletectedUserTypeId);
+    // data.append("newsType", SeletectedNewsTypeId);
+    data.append("endAt", selectedDate);
+    data.append("file", selectedFile[0]);
+
+    var config = {
+      method: "post",
+      url: "http://127.0.0.1:8000/api/news/insert",
+      
+      data: data,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+    // instance
+    //   .post("news/insert", { data })
+    //   .then((res) => console.log(res))
+    //   .catch((err) => console.log(err));
+  };
   return (
     <Stack>
       <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>
@@ -51,7 +115,7 @@ export default function AddNews() {
         <Divider />
       </DialogContent>
 
-      <DialogContent>
+      <DialogContent sx={{ marginBottom: "50px" }}>
         <Stack spacing={2}>
           <Stack
             alignItems={"center"}
@@ -60,9 +124,11 @@ export default function AddNews() {
             justifyContent={"space-between"}
           >
             <label>ຫົວຂໍ້</label>
-            <TextField sx={{ ...textFieldStyle, width: myWidth }} />
+            <TextField
+              onChange={(e) => setTitle(e.target.value)}
+              sx={{ ...textFieldStyle, width: myWidth }}
+            />
           </Stack>
-         
           <Stack
             alignItems={"center"}
             width={"100%"}
@@ -70,59 +136,77 @@ export default function AddNews() {
             justifyContent={"space-between"}
           >
             <label>ປະເພດຂ່າວສານ</label>
+            {/* <TextField sx={{ ...textFieldStyle, width: myWidth }} /> */}
             <Select
               sx={{ width: myWidth }}
               multiple
-              value={arr}
-              onChange={() => {}}
-              input={
-                <OutlinedInput
-                  sx={{ "&. MuiOutlinedInput-root": { padding: "0px" } }}
-                />
-              }
+              value={selectedNewsType}
+              onChange={async (e) => {
+                let arr = e.target.value;
+                let display = [];
+                //arr  userType
+
+                for (let i = 0; i < arr.length; i++) {
+                  const element = arr[i];
+                  let result = newsType.filter((x) => x.typeName == element);
+                  console.log("===>", result[0]._id);
+                  display.push(result[0]._id);
+                }
+
+                setSeletectedNewsTypeId(display);
+                setSelectedNewsType(arr);
+
+                console.log("====>", display);
+              }}
+              input={<OutlinedInput />}
               renderValue={(selected) => (
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  {selected.map((value) => (
+                  {selected?.map((value) => (
                     <Chip key={value} label={value} />
                   ))}
                 </Box>
               )}
               //   MenuProps={MenuProps}
             >
-              <MenuItem value="sd">asd</MenuItem>
-              <MenuItem value="w">asd</MenuItem>
-              <MenuItem value="v">asd</MenuItem>
+              {newsType?.map((val, index) => {
+                return (
+                  <MenuItem key={index} value={val.typeName}>
+                    {val.typeName}
+                  </MenuItem>
+                );
+              })}
             </Select>
           </Stack>
+
           <Stack
             alignItems={"center"}
             width={"100%"}
             direction="row"
             justifyContent={"space-between"}
           >
-            <label>ເຖິງ</label>
+            <label>ປະເພດຜູ້ໃຊ້</label>
             {/* <TextField sx={{ ...textFieldStyle, width: myWidth }} /> */}
             <Select
               sx={{ width: myWidth }}
               multiple
               value={selectedUserType}
-              onChange={ async (e) => {
+              onChange={async (e) => {
                 // console.log(e.target.getAttribbute("name"))
                 // console.log("====>",e.target.value)
-                let arr = e.target.value
-                let display = []
+                let arr = e.target.value;
+                let display = [];
                 for (let i = 0; i < arr.length; i++) {
-                    const element = arr[i];
-                    let result =  userType.filter( x => x.typeName == element)
-                    console.log("===>",result[0]._id)
-                    display.push(result[0]._id)
-                    // setSeletectedUserTypeId([...SeletectedUserTypeId, result[0].typeName])
+                  const element = arr[i];
+                  let result = userType.filter((x) => x.typeName == element);
+                  console.log("===>", result[0]._id);
+                  display.push(result[0]._id);
+                  // setSeletectedUserTypeId([...SeletectedUserTypeId, result[0].typeName])
                 }
 
-                 setSelectedUserType(e.target.value);
-                 setSeletectedUserTypeId(display)
+                setSelectedUserType(e.target.value);
+                setSeletectedUserTypeId(display);
                 //  console.log(selectedUserType)
-                console.log(SeletectedUserTypeId)
+                console.log(SeletectedUserTypeId);
               }}
               input={<OutlinedInput />}
               renderValue={(selected) => (
@@ -151,6 +235,7 @@ export default function AddNews() {
           >
             <label>ເນື້ອໃນ</label>
             <TextField
+              onChange={(e) => setBody(e.target.value)}
               multiline
               rows={6}
               sx={{
@@ -171,14 +256,16 @@ export default function AddNews() {
             //   spacing="15px"
             alignItems="center"
           >
-            <label>ວັນເດືອນປີເກີດ</label>
+            <label>ກຳນົດຮອດວັນທີ່</label>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 //   label="Basic example"
                 // value={value}
                 inputFormat="dd/MM/yyyy"
-                value={""}
+                value={selectedDate}
                 onChange={(newValue) => {
+                  setSelectedDate(newValue);
+
                   // console.log(newValue);
                   // setUserData({ ...userData, dateOfBirth: newValue });
                 }}
@@ -190,16 +277,45 @@ export default function AddNews() {
                 )}
               />
             </LocalizationProvider>
+          </Stack>
+          <Stack
+            width={"100%"}
+            direction="row"
+            justifyContent={"space-between"}
+          >
+            <label>ເລືອກໄຟຄັດຕິດ</label>
+            <Stack
+              width={myWidth}
+              direction="row"
+              justifyContent={"flex-start"}
+            >
+              {/* <Button onClick={()=> fileRef.current.click()} disableElevation variant="contained" sx={{...btnStyle}}>
+                    {selectedFileName == "" ? "ເລືອກໄຟຄັດຕິດ" : selectedFileName} 
+                </Button> */}
+              <input
+                onChange={(e) => {
+                  let data = e.target.value;
+                  let filePath = data?.split("\\");
+                  let fileName = filePath[filePath.length - 1];
+                  console.log(e.target.files);
 
-            {/* <TextField
-        //   disabled
-            onClick={()=> dateRef.current.click()}
-            onChange={(e) => {
-              setUserData({ ...userData, dateOfBirth: e.target.value });
-            }}
-            placeholder="ດດ/ວວ/ປປປປ"
-            sx={{ ...textFieldStyle, width: "90%", cursor: "pointer" }}
-          /> */}
+                  setSelectdeFileName(fileName);
+
+                  setSelectedFile(e.target.files);
+                }}
+                ref={fileRef}
+                type="file"
+              />
+            </Stack>
+          </Stack>
+          <Stack direction="row" spacing={1} justifyContent="flex-end">
+            <OkBtn
+              _title="ຕົກລົງ"
+              _onClick={() => {
+                createNews();
+              }}
+            />
+            <DenyBtn _onClick={() => {}} />
           </Stack>
         </Stack>
       </DialogContent>
