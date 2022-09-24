@@ -30,14 +30,14 @@ export default function News() {
   }, []);
   const myWidth = "88%";
   const [newsData, setNewsData] = React.useState();
-  const [originalData, setOriginalData] = React.useState();
+  // const [originalData, setOriginalData] = React.useState();
   const navigate = useNavigate();
   const getNews = async () => {
     try {
       let res = await instance.get(`news/all`);
       await console.log(res?.data.data);
       await setNewsData(res?.data.data);
-      await setOriginalData(res?.data.data);
+      // await setOriginalData(res?.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -111,7 +111,7 @@ export default function News() {
                   </td>
                   <td>
                     {val.body?.length > 10
-                      ? (val.body = val.body.substring(0, 10) + "...")
+                      ? (val.body.substring(0, 10) + "...")
                       : val.body}
                   </td>
                   <td>
@@ -152,17 +152,18 @@ export default function News() {
                         // let data = originalData?.filter((x) =>
                         //   x._id.includes(val._id)
                         // );
-                        let data
-                        originalData.forEach(element => {
-                          // console.log("====>>",originalData );
-                          if(element._id = val._id){
-                            data = element
-                          }
-                        });
+                        // let data
+
+                        // originalData.forEach(element => {
+                        //   // console.log("====>>",originalData );
+                        //   if(element._id = val._id){
+                        //     data = element
+                        //   }
+                        // });
                         console.log("====>>",newsData );
-                        // navigate(`${router.NEWS}/add-news`,{
-                        //   state: val
-                        // })
+                        navigate(`${router.NEWS}/add-news`,{
+                          state: val
+                        })
                         // setUpdatedData(val)
                       }}
                       color="primary"

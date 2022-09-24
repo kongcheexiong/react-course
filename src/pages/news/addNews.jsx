@@ -1,13 +1,18 @@
 import {
+  Alert,
+  Backdrop,
   Box,
   Button,
+  Checkbox,
   Chip,
+  CircularProgress,
   DialogContent,
   DialogTitle,
   Divider,
   MenuItem,
   OutlinedInput,
   Select,
+  Snackbar,
   TextField,
   useMediaQuery,
 } from "@mui/material";
@@ -26,10 +31,13 @@ import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AddNews() {
-  const location = useLocation()
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
   React.useEffect(() => {
-    console.log("===>",location?.state)
+    if (location?.state) {
+      getUpdatedTypeAndUserFromUrlState();
+    }
+    // console.log("===>", location?.state);
     fetchUserType();
     fetchNewsType();
   }, []);
@@ -38,8 +46,8 @@ export default function AddNews() {
   const [userType, setUserType] = React.useState([]);
   const [newsType, setNewsType] = React.useState([]);
 
-  const [title, setTitle] = React.useState("");
-  const [body, setBody] = React.useState("");
+  const [title, setTitle] = React.useState( location?.state.title || "");
+  const [body, setBody] = React.useState(location?.state.body || "");
 
   //   const [a, setA] = React.useState(10)
   const fileRef = React.useRef();
@@ -50,11 +58,33 @@ export default function AddNews() {
   const [selectedNewsType, setSelectedNewsType] = React.useState([]);
   const [SeletectedNewsTypeId, setSeletectedNewsTypeId] = React.useState([]);
 
-  const [selectedDate, setSelectedDate] = React.useState("");
+  const [selectedDate, setSelectedDate] = React.useState( location?.state.endAt || "");
   const [selectedFile, setSelectedFile] = React.useState("");
   const [selectedFileName, setSelectdeFileName] = React.useState("");
 
   const matches = useMediaQuery("(max-width:800px)");
+
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSucess] = React.useState(false);
+  const [err, setErr] = React.useState(false);
+
+  const [editFile, setEditfile] = React.useState(false);
+
+  const Fetching = () => {
+    setLoading(true);
+    setSucess(false);
+    setErr(false);
+  };
+  const FetchErr = () => {
+    setLoading(false);
+    setSucess(false);
+    setErr(true);
+  };
+  const FetchSuccess = () => {
+    setLoading(false);
+    setSucess(true);
+    setErr(false);
+  };
 
   const fetchUserType = async () => {
     instance
@@ -77,16 +107,40 @@ export default function AddNews() {
         console.log(err);
       });
   };
+  const getUserTypeIdIdforSend = () => {
+    let display = [];
+    for (let i = 0; i < selectedUserType.length; i++) {
+      const element = selectedUserType[i];
+      let result = userType.filter((x) => x.typeName == element);
+      console.log("===>", result[0]._id);
+      display.push(result[0]._id);
+      // setSeletectedUserTypeId([...SeletectedUserTypeId, result[0].typeName])
+    }
+    setSeletectedUserTypeId(display);
+  };
+  const getNewsTypeIdIdforSend = () => {
+    let display = [];
+    for (let i = 0; i < selectedNewsType.length; i++) {
+      const element = selectedNewsType[i];
+      let result = newsType.filter((x) => x.typeName == element);
+      console.log("===>", result[0]._id);
+      display.push(result[0]._id);
+    }
+    setSeletectedNewsTypeId(display);
+  };
   const createNews = async () => {
+    await getNewsTypeIdIdforSend()
+    await getUserTypeIdIdforSend()
+    Fetching();
     let data = new FormData();
     data.append("title", title);
     data.append("body", body);
 
-    SeletectedUserTypeId.forEach(element => {
+    SeletectedUserTypeId.forEach((element) => {
       data.append("userType", element);
     });
 
-    SeletectedNewsTypeId.forEach(element => {
+    SeletectedNewsTypeId.forEach((element) => {
       data.append("newsType", element);
     });
     // data.append("userType", SeletectedUserTypeId);
@@ -97,15 +151,17 @@ export default function AddNews() {
     var config = {
       method: "post",
       url: "http://127.0.0.1:8000/api/news/insert",
-      
+
       data: data,
     };
 
     await axios(config)
       .then(function (response) {
         console.log(response.data);
+        FetchSuccess();
       })
       .catch(function (error) {
+        FetchErr();
         console.log(error);
       });
 
@@ -114,8 +170,108 @@ export default function AddNews() {
     //   .then((res) => console.log(res))
     //   .catch((err) => console.log(err));
   };
+  const updateNews = async ()=>{
+    await getNewsTypeIdIdforSend()
+    await getUserTypeIdIdforSend()
+    Fetching();
+    let data = new FormData();
+    data.append("id",location.state._id)
+    data.append("title", title);
+    data.append("body", body);
+
+    SeletectedUserTypeId.forEach((element) => {
+      data.append("userType", element);
+    });
+
+    SeletectedNewsTypeId.forEach((element) => {
+      data.append("newsType", element);
+    });
+    // data.append("userType", SeletectedUserTypeId);
+    // data.append("newsType", SeletectedNewsTypeId);
+    data.append("endAt", selectedDate);
+    if(selectedFile.length >0){
+      data.append("file", selectedFile[0]);
+    }
+    
+    var config = {
+      method: "put",
+      url: "http://127.0.0.1:8000/api/news/update/",
+
+      data: data,
+    };
+    await axios(config)
+      .then(function (response) {
+        console.log(response.data);
+        FetchSuccess();
+      })
+      .catch(function (error) {
+        FetchErr();
+        console.log(error);
+      });
+  }
+
+  const getUpdatedTypeAndUserFromUrlState = () => {
+    let type = [];
+    location?.state.newsType.forEach((element) => {
+      type.push(element.typeName);
+    });
+    setSelectedNewsType(type);
+    let userType = [];
+    location?.state.userType.forEach((element) => {
+      userType.push(element.typeName);
+    });
+    setSelectedUserType(userType);
+  };
+
+ 
+
   return (
     <Stack>
+      {/**success */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={success}
+        autoHideDuration={2000}
+        onClose={() => {
+          setSucess(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setSucess(false);
+          }}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          This is a success message!
+        </Alert>
+      </Snackbar>
+      {/**err */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={err}
+        autoHideDuration={2000}
+        onClose={() => {
+          setErr(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setErr(false);
+          }}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          This is a error message!
+        </Alert>
+      </Snackbar>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        onClick={() => {}}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>
         ເພີ່ມປະເພດຂ່າວສານ
       </DialogTitle>
@@ -126,22 +282,22 @@ export default function AddNews() {
       <DialogContent sx={{ marginBottom: "50px" }}>
         <Stack spacing={2}>
           <Stack
-            alignItems={ matches ? "flex-start":"center"}
+            alignItems={matches ? "flex-start" : "center"}
             width={"100%"}
-            direction={ matches ? "column" : "row"}
+            direction={matches ? "column" : "row"}
             justifyContent={"space-between"}
           >
             <label>ຫົວຂໍ້</label>
             <TextField
-            defaultValue={ location?.state ? location?.state.title : null} 
+              defaultValue={location?.state ? location?.state.title : null}
               onChange={(e) => setTitle(e.target.value)}
               sx={{ ...textFieldStyle, width: myWidth }}
             />
           </Stack>
           <Stack
-            alignItems={ matches ? "flex-start":"center"}
+            alignItems={matches ? "flex-start" : "center"}
             width={"100%"}
-            direction={ matches ? "column" : "row"}
+            direction={matches ? "column" : "row"}
             justifyContent={"space-between"}
           >
             <label>ປະເພດຂ່າວສານ</label>
@@ -152,17 +308,7 @@ export default function AddNews() {
               value={selectedNewsType}
               onChange={async (e) => {
                 let arr = e.target.value;
-                let display = [];
-                //arr  userType
 
-                for (let i = 0; i < arr.length; i++) {
-                  const element = arr[i];
-                  let result = newsType.filter((x) => x.typeName == element);
-                  console.log("===>", result[0]._id);
-                  display.push(result[0]._id);
-                }
-
-                setSeletectedNewsTypeId(display);
                 setSelectedNewsType(arr);
 
                 console.log("====>", display);
@@ -188,9 +334,9 @@ export default function AddNews() {
           </Stack>
 
           <Stack
-             alignItems={ matches ? "flex-start":"center"}
-             width={"100%"}
-             direction={ matches ? "column" : "row"}
+            alignItems={matches ? "flex-start" : "center"}
+            width={"100%"}
+            direction={matches ? "column" : "row"}
             justifyContent={"space-between"}
           >
             <label>ປະເພດຜູ້ໃຊ້</label>
@@ -203,19 +349,11 @@ export default function AddNews() {
                 // console.log(e.target.getAttribbute("name"))
                 // console.log("====>",e.target.value)
                 let arr = e.target.value;
-                let display = [];
-                for (let i = 0; i < arr.length; i++) {
-                  const element = arr[i];
-                  let result = userType.filter((x) => x.typeName == element);
-                  console.log("===>", result[0]._id);
-                  display.push(result[0]._id);
-                  // setSeletectedUserTypeId([...SeletectedUserTypeId, result[0].typeName])
-                }
 
                 setSelectedUserType(e.target.value);
-                setSeletectedUserTypeId(display);
+
                 //  console.log(selectedUserType)
-                console.log(SeletectedUserTypeId);
+                console.log(SeletectedUserType);
               }}
               input={<OutlinedInput />}
               renderValue={(selected) => (
@@ -237,14 +375,14 @@ export default function AddNews() {
             </Select>
           </Stack>
           <Stack
-            alignItems={ matches ? "flex-start":"center"}
+            alignItems={matches ? "flex-start" : "center"}
             width={"100%"}
-            direction={ matches ? "column" : "row"}
+            direction={matches ? "column" : "row"}
             justifyContent={"space-between"}
           >
             <label>ເນື້ອໃນ</label>
             <TextField
-            defaultValue={ location?.state ? location.state.body : null}
+              defaultValue={location?.state ? location.state.body : null}
               onChange={(e) => setBody(e.target.value)}
               multiline
               rows={6}
@@ -260,20 +398,20 @@ export default function AddNews() {
             />
           </Stack>
           <Stack
-           alignItems={ matches ? "flex-start":"center"}
-           width={"100%"}
-           direction={ matches ? "column" : "row"}
-           justifyContent={"space-between"}
+            alignItems={matches ? "flex-start" : "center"}
+            width={"100%"}
+            direction={matches ? "column" : "row"}
+            justifyContent={"space-between"}
             //   spacing="15px"
-           
           >
             <label>ກຳນົດຮອດວັນທີ່</label>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 //   label="Basic example"
                 // value={value}
+                
                 inputFormat="dd/MM/yyyy"
-                value={ location?.state ? location.state.endAt : selectedDate}
+                value={selectedDate}
                 onChange={(newValue) => {
                   setSelectedDate(newValue);
 
@@ -289,53 +427,73 @@ export default function AddNews() {
               />
             </LocalizationProvider>
           </Stack>
-          <Stack
-            width={"100%"}
-           
-            justifyContent={"space-between"}
-
-            
-            alignItems={ matches ? "flex-start":"center"}
-         
-            direction={ matches ? "column" : "row"}
-          >
-            <label>ເລືອກໄຟຄັດຕິດ</label>
+          {location?.state ? (
             <Stack
-              width={myWidth}
               direction="row"
               justifyContent={"flex-start"}
-
+              spacing={1}
+              alignItems="center"
             >
-              {/* <Button onClick={()=> fileRef.current.click()} disableElevation variant="contained" sx={{...btnStyle}}>
+              <Checkbox
+                checked={editFile}
+                onChange={() => {
+                  setEditfile(!editFile);
+                }}
+              />
+              <span>ແກ້ໄຂໄຟ</span>
+            </Stack>
+          ) : null}
+          {!location?.state || editFile == true ? (
+            <Stack
+              width={"100%"}
+              justifyContent={"space-between"}
+              alignItems={matches ? "flex-start" : "center"}
+              direction={matches ? "column" : "row"}
+            >
+              <label>ເລືອກໄຟຄັດຕິດ</label>
+              <Stack
+                width={myWidth}
+                direction="row"
+                justifyContent={"flex-start"}
+              >
+                {/* <Button onClick={()=> fileRef.current.click()} disableElevation variant="contained" sx={{...btnStyle}}>
                     {selectedFileName == "" ? "ເລືອກໄຟຄັດຕິດ" : selectedFileName} 
                 </Button> */}
-              <input
-                onChange={(e) => {
-                  let data = e.target.value;
-                  let filePath = data?.split("\\");
-                  let fileName = filePath[filePath.length - 1];
-                  console.log(e.target.files);
+                <input
+                  onChange={(e) => {
+                    let data = e.target.value;
+                    let filePath = data?.split("\\");
+                    let fileName = filePath[filePath.length - 1];
+                    console.log(e.target.files);
 
-                  setSelectdeFileName(fileName);
+                    setSelectdeFileName(fileName);
 
-                  setSelectedFile(e.target.files);
-                }}
-                ref={fileRef}
-                type="file"
-              />
+                    setSelectedFile(e.target.files);
+                  }}
+                  ref={fileRef}
+                  type="file"
+                />
+              </Stack>
             </Stack>
-          </Stack>
+          ) : null}
+
           <Stack direction="row" spacing={1} justifyContent="flex-end">
             <OkBtn
               _title="ຕົກລົງ"
               _onClick={() => {
+                if (location?.state) {
+                  
+                  updateNews()
+                  return;
+                }
                 createNews();
               }}
             />
-            <DenyBtn _onClick={() => {
-              navigate(`${router.NEWS}`)
-            
-            }} />
+            <DenyBtn
+              _onClick={() => {
+                navigate(`${router.NEWS}`);
+              }}
+            />
           </Stack>
         </Stack>
       </DialogContent>
