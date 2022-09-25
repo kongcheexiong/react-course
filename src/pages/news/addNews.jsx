@@ -35,6 +35,7 @@ export default function AddNews() {
   const navigate = useNavigate();
   React.useEffect(() => {
     if (location?.state) {
+      console.log("res");
       getUpdatedTypeAndUserFromUrlState();
     }
     // console.log("===>", location?.state);
@@ -46,8 +47,8 @@ export default function AddNews() {
   const [userType, setUserType] = React.useState([]);
   const [newsType, setNewsType] = React.useState([]);
 
-  const [title, setTitle] = React.useState( location?.state.title || "");
-  const [body, setBody] = React.useState(location?.state.body || "");
+  const [title, setTitle] = React.useState(location?.state?.title || "");
+  const [body, setBody] = React.useState(location?.state?.body || "");
 
   //   const [a, setA] = React.useState(10)
   const fileRef = React.useRef();
@@ -58,7 +59,9 @@ export default function AddNews() {
   const [selectedNewsType, setSelectedNewsType] = React.useState([]);
   const [SeletectedNewsTypeId, setSeletectedNewsTypeId] = React.useState([]);
 
-  const [selectedDate, setSelectedDate] = React.useState( location?.state.endAt || "");
+  const [selectedDate, setSelectedDate] = React.useState(
+    location?.state?.endAt || ""
+  );
   const [selectedFile, setSelectedFile] = React.useState("");
   const [selectedFileName, setSelectdeFileName] = React.useState("");
 
@@ -107,30 +110,8 @@ export default function AddNews() {
         console.log(err);
       });
   };
-  const getUserTypeIdIdforSend = () => {
-    let display = [];
-    for (let i = 0; i < selectedUserType.length; i++) {
-      const element = selectedUserType[i];
-      let result = userType.filter((x) => x.typeName == element);
-      console.log("===>", result[0]._id);
-      display.push(result[0]._id);
-      // setSeletectedUserTypeId([...SeletectedUserTypeId, result[0].typeName])
-    }
-    setSeletectedUserTypeId(display);
-  };
-  const getNewsTypeIdIdforSend = () => {
-    let display = [];
-    for (let i = 0; i < selectedNewsType.length; i++) {
-      const element = selectedNewsType[i];
-      let result = newsType.filter((x) => x.typeName == element);
-      console.log("===>", result[0]._id);
-      display.push(result[0]._id);
-    }
-    setSeletectedNewsTypeId(display);
-  };
+
   const createNews = async () => {
-    await getNewsTypeIdIdforSend()
-    await getUserTypeIdIdforSend()
     Fetching();
     let data = new FormData();
     data.append("title", title);
@@ -170,12 +151,11 @@ export default function AddNews() {
     //   .then((res) => console.log(res))
     //   .catch((err) => console.log(err));
   };
-  const updateNews = async ()=>{
-    await getNewsTypeIdIdforSend()
-    await getUserTypeIdIdforSend()
+  const updateNews = async () => {
     Fetching();
+
     let data = new FormData();
-    data.append("id",location.state._id)
+    data.append("id", location.state._id);
     data.append("title", title);
     data.append("body", body);
 
@@ -189,10 +169,13 @@ export default function AddNews() {
     // data.append("userType", SeletectedUserTypeId);
     // data.append("newsType", SeletectedNewsTypeId);
     data.append("endAt", selectedDate);
-    if(selectedFile.length >0){
+    if (selectedFile.length > 0 && editFile) {
       data.append("file", selectedFile[0]);
     }
-    
+
+    console.log("user===>", SeletectedUserTypeId);
+    console.log(SeletectedNewsTypeId);
+
     var config = {
       method: "put",
       url: "http://127.0.0.1:8000/api/news/update/",
@@ -208,22 +191,28 @@ export default function AddNews() {
         FetchErr();
         console.log(error);
       });
-  }
+  };
 
   const getUpdatedTypeAndUserFromUrlState = () => {
     let type = [];
+    let typeId = []
     location?.state.newsType.forEach((element) => {
       type.push(element.typeName);
+      typeId.push(element._id)
     });
-    setSelectedNewsType(type);
+
+    setSelectedNewsType(type)
+    setSeletectedNewsTypeId(typeId)
+   
     let userType = [];
+    let userTypeId = [];
     location?.state.userType.forEach((element) => {
       userType.push(element.typeName);
+      userTypeId.push(element._id);
     });
     setSelectedUserType(userType);
+    setSeletectedUserTypeId(userTypeId)
   };
-
- 
 
   return (
     <Stack>
@@ -309,6 +298,16 @@ export default function AddNews() {
               onChange={async (e) => {
                 let arr = e.target.value;
 
+                let display = [];
+                for (let i = 0; i < arr.length; i++) {
+                  const element = arr[i];
+                  let result = newsType.filter((x) => x.typeName == element);
+                  console.log("===>", result[0]._id);
+                  display.push(result[0]._id);
+                  console.log("result[0]._id", result[0]._id);
+                }
+                setSeletectedNewsTypeId(display);
+
                 setSelectedNewsType(arr);
 
                 console.log("====>", display);
@@ -349,7 +348,15 @@ export default function AddNews() {
                 // console.log(e.target.getAttribbute("name"))
                 // console.log("====>",e.target.value)
                 let arr = e.target.value;
-
+                let display = [];
+                for (let i = 0; i < arr.length; i++) {
+                  const element = arr[i];
+                  let result = userType.filter((x) => x.typeName == element);
+                  console.log("===>", result[0]._id);
+                  display.push(result[0]._id);
+                  // setSeletectedUserTypeId([...SeletectedUserTypeId, result[0].typeName])
+                }
+                setSeletectedUserTypeId(display);
                 setSelectedUserType(e.target.value);
 
                 //  console.log(selectedUserType)
@@ -409,7 +416,7 @@ export default function AddNews() {
               <DatePicker
                 //   label="Basic example"
                 // value={value}
-                
+
                 inputFormat="dd/MM/yyyy"
                 value={selectedDate}
                 onChange={(newValue) => {
@@ -482,8 +489,8 @@ export default function AddNews() {
               _title="ຕົກລົງ"
               _onClick={() => {
                 if (location?.state) {
-                  
-                  updateNews()
+                  updateNews();
+
                   return;
                 }
                 createNews();
