@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
 } from "@mui/material";
 import * as react from "react";
 
@@ -15,6 +16,7 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SearchIcon from "@mui/icons-material/Search";
 import { btnStyle } from "../style";
 import { ConfirmContext } from "../contexts/confirDialog.provider";
+import { Stack } from "@mui/system";
 
 export const IconDelete = () => {
   return (
@@ -159,3 +161,14 @@ export const ConfirmDialog = (props) => {
     </Dialog>
   );
 };
+
+
+export const Card = (props) =>{
+  const {title = "title", value= "0"} = props
+  return <div className="card">
+    <span>{title}</span>
+    
+    <span>{value}</span>
+
+  </div>
+}

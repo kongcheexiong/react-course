@@ -65,7 +65,7 @@ export default function News() {
   const dowloadFile = async (fileName) => {
     fileSaver.saveAs(
       `${server_url}download/file/?file=${fileName}`,
-      "filedownload"
+      "file"
     );
   };
   const search = async (title) => {
