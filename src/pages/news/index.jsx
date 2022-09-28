@@ -15,6 +15,7 @@ import {
   AddNewBtn,
   IconDelete,
   IconEdit,
+  PrintBtn,
   ReloadArea,
   ReloadBtn,
 } from "../../components/components";
@@ -29,7 +30,23 @@ import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import axios from "axios";
 
 import * as fileSaver from "file-saver";
+import { useReactToPrint } from "react-to-print";
+import { ComponentToPrint } from "./printComponent";
+
 export default function News() {
+  {
+    /**print pdf */
+  }
+  const componentRef = React.useRef();
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+  {
+    /*** */
+  }
+
+
   React.useEffect(() => {
     getNews();
   }, []);
@@ -63,10 +80,7 @@ export default function News() {
     }
   };
   const dowloadFile = async (fileName) => {
-    fileSaver.saveAs(
-      `${server_url}download/file/?file=${fileName}`,
-      "file"
-    );
+    fileSaver.saveAs(`${server_url}download/file/?file=${fileName}`, "file");
   };
   const search = async (title) => {
     setLoading(true);
@@ -74,7 +88,7 @@ export default function News() {
       .get(`news/search/title/${title}`)
       .then((res) => {
         setLoading(false);
-        console.log(res.data.data)
+        console.log(res.data.data);
         setNewsData(res.data.data);
       })
       .catch((err) => console.log(err));
@@ -85,6 +99,14 @@ export default function News() {
   // const [updatedData, setUpdatedData] = React.useState()
   return (
     <Stack spacing={2}>
+      {/**print */}
+      <div
+        style={{ display: "none" }} // This make ComponentToPrint show   only while printing
+      >
+        <ComponentToPrint data={newsData} ref={componentRef} />
+      </div>
+      {/**end print */}
+
       <Stack direction="row" spacing={2}>
         <AddNewBtn
           _title={"ເພີ່ມຂ່າວສານ"}
@@ -97,6 +119,9 @@ export default function News() {
             getNews();
           }}
         />
+        <PrintBtn _onClick={() => {
+           handlePrint()
+          }}/>
       </Stack>
       <Divider />
       <Stack
@@ -110,11 +135,11 @@ export default function News() {
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               // console.log(e.target.value);
-              if(e.target.value == ""){
-                getNews()
+              if (e.target.value == "") {
+                getNews();
                 return;
               }
-               search(e.target.value)
+              search(e.target.value);
             }
           }}
           placeholder="id"

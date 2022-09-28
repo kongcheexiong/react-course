@@ -50,10 +50,39 @@ tr:nth-child(even) {
   padding: 20px 10px;
   display: flex;
   flex-direction: column;
-  width: 150px;
+  min-width: 150px;
   height: 60px;
   justify-content: space-around;
   align-items: center;
   border-radius: 20px;
 
+}
+@media print {
+  footer {page-break-after: always;}
+}
+@media all {
+  .page-break {
+    display: none;
+  }
+}
+
+@media print {
+  html, body {
+    height: initial !important;
+    overflow: initial !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+@media print {
+  .page-break {
+    margin-top: 2rem;
+    display: block;
+    page-break-before: auto;
+  }
+}
+
+@page {
+  size: auto;
+  margin: 14cm;
 }

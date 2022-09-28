@@ -12,8 +12,8 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import GroupIcon from "@mui/icons-material/Group";
 import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 import { Avatar, Divider, Stack, IconButton, Badge } from "@mui/material";
 
@@ -27,6 +27,34 @@ export default function MyDashboradLayOut() {
       icon: <DashboardIcon fontSize="small" />,
       router: `${router.DASHBOARD}`,
     },
+    {
+      name: "ໜ້າຫຼັກ",
+      icon: <DashboardIcon fontSize="small" />,
+      router: ``,
+      sub: [
+        {
+          name: "ຈັດການຂໍ້ມູນປະເພດຜູ້ໃຊ້",
+          icon: <GroupIcon fontSize="small" />,
+          router: `${router.USERTYPE}`,
+        },
+        {
+          name: "ຈັດການຂໍ້ມູນຜູ້ໃຊ້",
+          icon: <PersonIcon fontSize="small" />,
+          router: `${router.USERS}`,
+        },
+        {
+          name: "ຈັດການຂໍ້ມູນປະເພດຂ່າວສານ",
+          icon: <AutoAwesomeMotionIcon fontSize="small" />,
+          router: `${router.NEWSCATEGORY}`,
+        },
+        {
+          name: "ຈັດການຂໍ້ມູນຂ່າວສານ",
+          icon: <NewspaperIcon fontSize="small" />,
+          router: `${router.NEWS}`,
+        },
+      ],
+    },
+
     {
       name: "ຈັດການຂໍ້ມູນປະເພດຜູ້ໃຊ້",
       icon: <GroupIcon fontSize="small" />,
@@ -52,8 +80,8 @@ export default function MyDashboradLayOut() {
     <div>
       {/** this is side nav */}
       <div>
-        <nav > 
-          <ul className={collape && "open"}> 
+        <nav>
+          <ul className={collape && "open"}>
             {/** side nav header and logo name*/}
             <div
               style={{
@@ -133,8 +161,6 @@ export default function MyDashboradLayOut() {
                 })}
               </div>
 
-              
-
               {/** log out menu */}
               <div>
                 <a>
@@ -156,9 +182,7 @@ export default function MyDashboradLayOut() {
         </nav>
       </div>
       {/*** this is header layout */}
-      <div
-       className={collape ? "body open " : "body"}
-      >
+      <div className={collape ? "body open " : "body"}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -176,12 +200,7 @@ export default function MyDashboradLayOut() {
                 setCollape((collape) => !collape);
               }}
             >
-              {
-                collape ? <KeyboardArrowRightIcon/> : <KeyboardArrowLeftIcon/>
-              }
-              
-              
-
+              {collape ? <KeyboardArrowRightIcon /> : <KeyboardArrowLeftIcon />}
             </IconButton>
           </Stack>
           <Stack direction="row-reverse" spacing={0} alignItems="center">

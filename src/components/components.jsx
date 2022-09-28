@@ -17,6 +17,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { btnStyle } from "../style";
 import { ConfirmContext } from "../contexts/confirDialog.provider";
 import { Stack } from "@mui/system";
+import PrintIcon from '@mui/icons-material/Print';
 
 export const IconDelete = () => {
   return (
@@ -98,6 +99,22 @@ export const ReloadBtn = (props) => {
     </Button>
   );
 };
+export const PrintBtn = (props) => {
+  const { _title = "Export", _onClick } = props;
+  return (
+    <Button
+      sx={{ ...btnStyle }}
+      startIcon={<PrintIcon />}
+      onClick={_onClick}
+      variant="contained"
+      color="info"
+      size="small"
+      disableElevation
+    >
+      {_title}
+    </Button>
+  );
+};
 
 export const ReloadArea = () => {
   return (
@@ -164,8 +181,10 @@ export const ConfirmDialog = (props) => {
 
 
 export const Card = (props) =>{
-  const {title = "title", value= "0"} = props
-  return <div className="card">
+  const {title = "title", value= "0", color= "#F8F9FA"} = props
+  return <div className="card" style={{
+    backgroundColor: color
+  }}>
     <span>{title}</span>
     
     <span>{value}</span>
