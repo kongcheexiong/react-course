@@ -14,11 +14,24 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import MenuIcon from '@mui/icons-material/Menu';
 
-import { Avatar, Divider, Stack, IconButton, Badge } from "@mui/material";
+import {
+  Avatar,
+  Divider,
+  Stack,
+  IconButton,
+  Badge,
+  Collapse,
+} from "@mui/material";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 export default function MyDashboradLayOut() {
   const [collape, setCollape] = React.useState(false);
+
+  const [open, setOpen] = React.useState(false);
+  const [opens, setOpens] = React.useState(false);
 
   const navigate = useNavigate();
   const sideNavData = [
@@ -28,8 +41,8 @@ export default function MyDashboradLayOut() {
       router: `${router.DASHBOARD}`,
     },
     {
-      name: "ໜ້າຫຼັກ",
-      icon: <DashboardIcon fontSize="small" />,
+      name: "ຈັດການຂໍ້ມູນພຶ້ນຖານ",
+      icon: <PersonIcon fontSize="small" />,
       router: ``,
       sub: [
         {
@@ -54,26 +67,22 @@ export default function MyDashboradLayOut() {
         },
       ],
     },
-
     {
-      name: "ຈັດການຂໍ້ມູນປະເພດຜູ້ໃຊ້",
+      name: "ຈັດການຂໍ້ມູນ",
       icon: <GroupIcon fontSize="small" />,
-      router: `${router.USERTYPE}`,
-    },
-    {
-      name: "ຈັດການຂໍ້ມູນຜູ້ໃຊ້",
-      icon: <PersonIcon fontSize="small" />,
-      router: `${router.USERS}`,
-    },
-    {
-      name: "ຈັດການຂໍ້ມູນປະເພດຂ່າວສານ",
-      icon: <AutoAwesomeMotionIcon fontSize="small" />,
-      router: `${router.NEWSCATEGORY}`,
-    },
-    {
-      name: "ຈັດການຂໍ້ມູນຂ່າວສານ",
-      icon: <NewspaperIcon fontSize="small" />,
-      router: `${router.NEWS}`,
+      router: ``,
+      sub: [
+        {
+          name: "ປະເພດຜູ້ໃຊ້",
+          icon: <GroupIcon fontSize="small" />,
+          router: `${router.USERTYPE}`,
+        },
+        {
+          name: "ຜູ້ໃຊ້",
+          icon: <PersonIcon fontSize="small" />,
+          router: `${router.USERS}`,
+        },
+      ],
     },
   ];
   return (
@@ -81,13 +90,13 @@ export default function MyDashboradLayOut() {
       {/** this is side nav */}
       <div>
         <nav>
-          <ul className={collape && "open"}>
+         <ul className={collape && "open"}>
             {/** side nav header and logo name*/}
             <div
               style={{
                 display: "flex",
                 justifyContent: "center",
-                margin: "5px",
+                margin: "10px",
                 alignItems: "center",
                 maxHeight: "40px",
               }}
@@ -121,42 +130,136 @@ export default function MyDashboradLayOut() {
               <div>
                 {sideNavData?.map((data, index) => {
                   return (
-                    <a
-                      key={index}
-                      onClick={() => {
-                        if (!data.router == "") {
-                          navigate(data?.router);
-                        }
-                      }}
-                      style={{
-                        backgroundColor:
-                          location.pathname.split("/")[1] ===
-                          data?.router.split("/")[1]
-                            ? "#F8F9FA"
-                            : `rgba(255, 255, 255, 1)`,
-                      }}
-                    >
-                      <Stack direction="column">
+                    <Stack key={index}>
+                      <a
+                        onClick={() => {
+                          if (data.sub && data.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ") {
+                            setOpen(!open);
+                            return;
+                            // setOpens(!opens)
+                          }
+                          if (data.sub && data.name == "ຈັດການຂໍ້ມູນ") {
+                            // setOpen(!open);
+                            setOpens(!opens);
+                            return;
+                          }
+                          if (!data.router == "") {
+                            navigate(data?.router);
+                          }
+                        }}
+                        style={{
+                          backgroundColor:
+                            location.pathname.split("/")[1] ===
+                            data?.router.split("/")[1]
+                              ? "#F8F9FA"
+                              : `rgba(255, 255, 255, 1)`,
+                          paddingRight: "10px",
+                        }}
+                      >
                         <Stack
-                          direction="row"
+                          direction= { collape ? "row-reverse" : "row"}
                           alignItems="center"
-                          spacing={2}
                           justifyContent="space-between"
-                          sx={{
-                            paddingRight: "30px",
-                          }}
                         >
                           <Stack
                             direction="row"
                             alignItems="center"
-                            spacing={1}
+                            spacing={2}
                           >
                             <div>{data?.icon}</div>
-                            <div>{data?.name}</div>
+                            <div>{ !collape ? data?.name : null}</div>
                           </Stack>
+                          {/**icon */}
+                          {!collape && data.sub && (
+                            <div>
+                              {data?.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ" ? (
+                                <>
+                                  {" "}
+                                  {open ? (
+                                    <ExpandLessIcon />
+                                  ) : (
+                                    <ExpandMoreIcon />
+                                  )}
+                                </>
+                              ) : data?.name == "ຈັດການຂໍ້ມູນ" ? (
+                                <>
+                                  {" "}
+                                  {opens ? (
+                                    <ExpandLessIcon />
+                                  ) : (
+                                    <ExpandMoreIcon />
+                                  )}
+                                </>
+                              ) : null}
+                            </div>
+                          )}
                         </Stack>
-                      </Stack>
-                    </a>
+                      </a>
+                      {/**collape of ຈັດການຂໍ້ມູນພຶ້ນຖານ */}
+                      { data.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ" &&
+                        data.sub?.map((val, index) => {
+                          return (
+                            <Collapse in={!collape && open} timeout="auto" unmountOnExit>
+                              <a
+                                onClick={() => {
+                                  if (!val.router == "") {
+                                    navigate(val?.router);
+                                  }
+                                }}
+                                style={{
+                                  backgroundColor:
+                                    location.pathname.split("/")[1] ===
+                                    val?.router.split("/")[1]
+                                      ? "#F8F9FA"
+                                      : `rgba(255, 255, 255, 1)`,
+                                  paddingLeft: "50px",
+                                }}
+                              >
+                                <Stack
+                                  direction="row"
+                                  alignItems="center"
+                                  spacing={2}
+                                >
+                                  <div>{val?.icon}</div>
+                                  <div>{val?.name}</div>
+                                </Stack>
+                              </a>
+                            </Collapse>
+                          );
+                        })}
+                      {/**collape of ຈັດການຂໍ້ມູນ */}
+                      { data.name == "ຈັດການຂໍ້ມູນ" &&
+                        data.sub?.map((val, index) => {
+                          return (
+                            <Collapse in={ !collape && opens} timeout="auto" unmountOnExit>
+                              <a
+                                onClick={() => {
+                                  if (!val.router == "") {
+                                    navigate(val?.router);
+                                  }
+                                }}
+                                style={{
+                                  backgroundColor:
+                                    location.pathname.split("/")[1] ===
+                                    val?.router.split("/")[1]
+                                      ? "#F8F9FA"
+                                      : `rgba(255, 255, 255, 1)`,
+                                  paddingLeft: "50px",
+                                }}
+                              >
+                                <Stack
+                                  direction="row"
+                                  alignItems="center"
+                                  spacing={2}
+                                >
+                                  <div>{val?.icon}</div>
+                                  <div>{val?.name}</div>
+                                </Stack>
+                              </a>
+                            </Collapse>
+                          );
+                        })}
+                    </Stack>
                   );
                 })}
               </div>
@@ -179,10 +282,14 @@ export default function MyDashboradLayOut() {
               </div>
             </div>
           </ul>
+          
+         
         </nav>
       </div>
       {/*** this is header layout */}
-      <div className={collape ? "body open " : "body"}>
+      <div className={collape ? "body open " : "body"} style={{
+        marginLeft: collape && "60px"
+      }}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -200,7 +307,8 @@ export default function MyDashboradLayOut() {
                 setCollape((collape) => !collape);
               }}
             >
-              {collape ? <KeyboardArrowRightIcon /> : <KeyboardArrowLeftIcon />}
+              <MenuIcon/>
+              {/* {collape ? <MenuIcon /> : <KeyboardArrowLeftIcon />} */}
             </IconButton>
           </Stack>
           <Stack direction="row-reverse" spacing={0} alignItems="center">

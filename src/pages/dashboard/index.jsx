@@ -6,6 +6,8 @@ import { Card } from "../../components/components";
 import { format } from "date-fns";
 import { LineGraph } from "./graph";
 
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+
 // import { PrintComponent } from "./PrintComponent";
 // import { PrintContext } from "../../../context/print.context";
 export default function Dashboard() {
@@ -29,10 +31,9 @@ export default function Dashboard() {
 
   return (
     <Stack spacing={2}>
-    
       <Stack direction={"row"} justifyContent="space-between">
-        <Card  title={"ປະເພດຜູ້ໃຊ້"} value={data?.userType?.length ?? "?"} />
-        <Card  title={"ຜູ້ໃຊ້"} value={data?.user?.length ?? "?"} />
+        <Card icon={<AccountBoxIcon fontSize="large"/>}  title={"ປະເພດຜູ້ໃຊ້"} value={data?.userType?.length ?? "?"} />
+        <Card  icon={<AccountBoxIcon fontSize="large"/>} title={"ຜູ້ໃຊ້"} value={data?.user?.length ?? "?"} />
         <Card title={"ປະເພດຂ່າວສານ"} value={data?.newsCate?.length ?? "?"} />
         <Card title={"ຂ່າວສານ"} value={data?.news?.length ?? "?"} />
       </Stack>

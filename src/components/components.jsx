@@ -17,7 +17,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { btnStyle } from "../style";
 import { ConfirmContext } from "../contexts/confirDialog.provider";
 import { Stack } from "@mui/system";
-import PrintIcon from '@mui/icons-material/Print';
+import PrintIcon from "@mui/icons-material/Print";
 
 export const IconDelete = () => {
   return (
@@ -179,15 +179,31 @@ export const ConfirmDialog = (props) => {
   );
 };
 
+export const Card = (props) => {
+  const {
+    title = "title",
+    value = "0",
+    color = "#F8F9FA",
+    icon = <AddIcon size="small" />,
+  } = props;
+  return (
+    <div
+      className="card"
+      style={{
+        backgroundColor: color,
+        display: "flex",
+        flexDirection: "row",
+        padding: "20px 20px"
+      }}
+    >
+      <Stack flex={1}>
+      {icon}
+      </Stack>
+      <Stack flex={2}>
+        <span>{title}</span>
 
-export const Card = (props) =>{
-  const {title = "title", value= "0", color= "#F8F9FA"} = props
-  return <div className="card" style={{
-    backgroundColor: color
-  }}>
-    <span>{title}</span>
-    
-    <span>{value}</span>
-
-  </div>
-}
+        <span>{value}</span>
+      </Stack>
+    </div>
+  );
+};

@@ -15,7 +15,7 @@ export class ComponentToPrint extends React.PureComponent {
   render() {
     console.log("this.state.===>", this.props);
     return (
-      <div style={{ margin: "0", padding: "0" }}>
+      <div>
         {" "}
         
         <div

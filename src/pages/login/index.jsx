@@ -46,6 +46,7 @@ export default function Login() {
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("name", `${res.data?.data[0]?.firstName} ${res.data?.data[0]?.lastName}`)
+        
         navigate(router.DASHBOARD)
         console.log(res.data);
       }).catch((err) => {
@@ -88,26 +89,7 @@ export default function Login() {
         size="small"
         sx={{ ...textFieldStyle }}
       />
-      <Select
-        value={role}
-        onChange={(e) => {
-          setRole(e.target.value);
-          console.log("sdfasd");
-        }}
-        size="small"
-      >
-        <MenuItem value="none">None</MenuItem>
-        <MenuItem value="Teacher">Teacher</MenuItem>
-        <MenuItem value="Student">Student</MenuItem>
-      </Select>
-      <a
-        style={{
-          alignSelf: "end",
-        }}
-        href="/register"
-      >
-        Don't have account?
-      </a>
+
       {
         isLoading ? <span>Loging in...</span> : isErr ? <span>There is an err</span> : null
       }
