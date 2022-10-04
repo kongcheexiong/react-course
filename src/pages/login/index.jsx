@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Button, Select, TextField, MenuItem, AppBar } from "@mui/material";
+import { Button, Select, TextField, MenuItem, AppBar, InputAdornment, IconButton } from "@mui/material";
 import { borderRadius } from "@mui/system";
 import { withStyles } from "@mui/styles";
 
@@ -11,6 +11,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import axios from "axios";
 import { router } from "../../constants";
+
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -27,6 +30,8 @@ export default function Login() {
  
 
   const token = localStorage.getItem("token");
+
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = async () => {
     //  console.log(userId + password)
@@ -85,9 +90,22 @@ export default function Login() {
         onChange={(e) => {
           setPassword(e.target.value);
         }}
+        type="password"
         placeholder="password"
         size="small"
         sx={{ ...textFieldStyle }}
+        endAdornment={
+          <InputAdornment position="end">
+            <IconButton
+              aria-label="toggle password visibility"
+              onClick={()=>{}}
+              onMouseDown={handleMouseDownPassword}
+              edge="end"
+            >
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        }
       />
 
       {

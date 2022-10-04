@@ -19,11 +19,15 @@ import {
   ReloadArea,
   ReloadBtn,
 } from "../../components/components";
-import { textFieldStyle } from "../../style";
+import { btnStyle, textFieldStyle } from "../../style";
 import { useNavigate } from "react-router-dom";
 import { router, server_url } from "../../constants";
 import { instance } from "../../api";
 import { format, getDate } from "date-fns";
+
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 // import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
@@ -45,7 +49,6 @@ export default function News() {
   {
     /*** */
   }
-
 
   React.useEffect(() => {
     getNews();
@@ -96,7 +99,23 @@ export default function News() {
 
   const [loading, setLoading] = React.useState(false);
 
+  const [startDate, setStartDate] = React.useState(Date.now());
+  const [endDate, setEndDate] = React.useState(Date.now());
+
   // const [updatedData, setUpdatedData] = React.useState()
+  const searchByDate = async () => {
+    if(startDate == "" || endDate == ""){
+      return ;
+    }
+    await instance
+      .get(
+        `http://127.0.0.1:8000/api/news/search/date?start=${startDate}&end=${endDate}`
+      )
+      .then((res) => {
+        console.log(res.data.data)
+        setNewsData(res.data.data);
+      });
+  };
   return (
     <Stack spacing={2}>
       {/**print */}
@@ -119,10 +138,76 @@ export default function News() {
             getNews();
           }}
         />
-        <PrintBtn _onClick={() => {
-           handlePrint()
-          }}/>
+        <PrintBtn
+          _onClick={() => {
+            handlePrint();
+          }}
+        />
       </Stack>
+      <Divider />
+      <Stack>
+        <Stack direction={"row"} spacing={2}>
+          <Stack direction={"row"} spacing={1} alignItems="center">
+            <label>ຕັ້ງແຕ່ວັນທີ່</label>
+
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                inputFormat="dd/MM/yyyy"
+                value={startDate}
+                onChange={(newValue) => {
+                  setStartDate(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    sx={{ ...textFieldStyle, width: "200px" }}
+                    {...params}
+                  />
+                )}
+              />
+            </LocalizationProvider>
+          </Stack>
+          <Stack direction={"row"} spacing={1} alignItems="center">
+            <label>ຫາວັນທີ່</label>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                inputFormat="dd/MM/yyyy"
+                value={endDate}
+                onChange={(newValue) => {
+                  setEndDate(newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    sx={{ ...textFieldStyle, width: "200px" }}
+                    {...params}
+                  />
+                )}
+              />
+            </LocalizationProvider>
+          </Stack>
+          {/* <Stack direction={"row"} spacing={2}>
+          <Stack direction={"row"} spacing={1}>
+            <label>ວັນທີ່ສ້າງລາຍການ</label>
+            <TextField sx={{ ...textFieldStyle, width: "200px" }} />
+          </Stack>
+          <Stack direction={"row"} spacing={1}>
+            <label>ວັນທີ່ສ້າງລາຍການ</label>
+            <TextField sx={{ ...textFieldStyle, width: "200px" }} />
+          </Stack>
+        </Stack> */}
+        </Stack>
+        <Stack direction={"row"} justifyContent="flex-end">
+          <Button
+            disableElevation
+            variant="contained"
+            color="secondary"
+            onClick={searchByDate}
+            sx={{ ...btnStyle, width: "100px" }}
+          >
+            Search
+          </Button>
+        </Stack>
+      </Stack>
+
       <Divider />
       <Stack
         direction={"row"}

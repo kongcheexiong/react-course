@@ -214,8 +214,32 @@ export default function AddNews() {
     setSeletectedUserTypeId(userTypeId)
   };
 
+  const [isFormErr, setFormErr] = React.useState(false)
+
+
   return (
     <Stack>
+      {/**if no input data */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={isFormErr}
+        autoHideDuration={2000}
+        onClose={() => {
+          setFormErr(false)
+         
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setFormErr(false)
+            
+          }}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          Please input some data!
+        </Alert>
+      </Snackbar>
       {/**success */}
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
@@ -488,6 +512,10 @@ export default function AddNews() {
             <OkBtn
               _title="ຕົກລົງ"
               _onClick={() => {
+                if(title == "" || body == "" || selectedDate == "" || selectedNewsType.length <= 0 || selectedUserType.length <= 0) {
+                  setFormErr(true)
+                  return;
+                }
                 if (location?.state) {
                   updateNews();
 

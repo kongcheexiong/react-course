@@ -14,7 +14,7 @@ import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
 
 import {
   Avatar,
@@ -23,9 +23,17 @@ import {
   IconButton,
   Badge,
   Collapse,
+  Button,
+  DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useState } from "react";
+import { btnStyle } from "../style";
 
 export default function MyDashboradLayOut() {
   const [collape, setCollape] = React.useState(false);
@@ -85,12 +93,44 @@ export default function MyDashboradLayOut() {
       ],
     },
   ];
+  const [isPopup, setPopup] = React.useState(false);
   return (
     <div>
+      <Dialog open={isPopup} onClose={() => setPopup(!isPopup)}>
+        <DialogTitle sx={{ fontFamily: "Noto sans lao" }}>ຢືນຢັນ</DialogTitle>
+        <DialogContent>
+          <p>Do you really want to exit?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            sx={{ ...btnStyle }}
+            onClick={() => setPopup(false)}
+            variant="contained"
+            color="error"
+            size="small"
+            disableElevation
+          >
+            ຍົກເລີກ
+          </Button>
+          <Button
+            sx={{ ...btnStyle }}
+            onClick={() => {
+              localStorage.clear();
+              navigate(`/`);
+            }}
+            variant="contained"
+            color="primary"
+            size="small"
+            disableElevation
+          >
+            ຕົກລົງ
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/** this is side nav */}
       <div>
         <nav>
-         <ul className={collape && "open"}>
+          <ul className={collape && "open"}>
             {/** side nav header and logo name*/}
             <div
               style={{
@@ -157,7 +197,7 @@ export default function MyDashboradLayOut() {
                         }}
                       >
                         <Stack
-                          direction= { collape ? "row-reverse" : "row"}
+                          direction={collape ? "row-reverse" : "row"}
                           alignItems="center"
                           justifyContent="space-between"
                         >
@@ -167,7 +207,7 @@ export default function MyDashboradLayOut() {
                             spacing={2}
                           >
                             <div>{data?.icon}</div>
-                            <div>{ !collape ? data?.name : null}</div>
+                            <div>{!collape ? data?.name : null}</div>
                           </Stack>
                           {/**icon */}
                           {!collape && data.sub && (
@@ -196,10 +236,10 @@ export default function MyDashboradLayOut() {
                         </Stack>
                       </a>
                       {/**collape of ຈັດການຂໍ້ມູນພຶ້ນຖານ */}
-                      { data.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ" &&
+                      {data.name == "ຈັດການຂໍ້ມູນພຶ້ນຖານ" &&
                         data.sub?.map((val, index) => {
                           return (
-                            <Collapse in={!collape && open} timeout="auto" unmountOnExit>
+                            <Collapse in={open} timeout="auto" unmountOnExit>
                               <a
                                 onClick={() => {
                                   if (!val.router == "") {
@@ -213,10 +253,11 @@ export default function MyDashboradLayOut() {
                                       ? "#F8F9FA"
                                       : `rgba(255, 255, 255, 1)`,
                                   paddingLeft: "50px",
+                                  paddingRight: "25px",
                                 }}
                               >
                                 <Stack
-                                  direction="row"
+                                  direction={!collape ? "row" : "row-reverse"}
                                   alignItems="center"
                                   spacing={2}
                                 >
@@ -228,10 +269,10 @@ export default function MyDashboradLayOut() {
                           );
                         })}
                       {/**collape of ຈັດການຂໍ້ມູນ */}
-                      { data.name == "ຈັດການຂໍ້ມູນ" &&
+                      {data.name == "ຈັດການຂໍ້ມູນ" &&
                         data.sub?.map((val, index) => {
                           return (
-                            <Collapse in={ !collape && opens} timeout="auto" unmountOnExit>
+                            <Collapse in={opens} timeout="auto" unmountOnExit>
                               <a
                                 onClick={() => {
                                   if (!val.router == "") {
@@ -245,10 +286,11 @@ export default function MyDashboradLayOut() {
                                       ? "#F8F9FA"
                                       : `rgba(255, 255, 255, 1)`,
                                   paddingLeft: "50px",
+                                  paddingRight: "25px",
                                 }}
                               >
                                 <Stack
-                                  direction="row"
+                                  direction={!collape ? "row" : "row-reverse"}
                                   alignItems="center"
                                   spacing={2}
                                 >
@@ -271,8 +313,7 @@ export default function MyDashboradLayOut() {
                     <LogoutIcon fontSize="small" />
                     <div
                       onClick={() => {
-                        localStorage.clear();
-                        navigate(`/`);
+                        setPopup(true);
                       }}
                     >
                       ອອກຈາກລະບົບ
@@ -282,14 +323,15 @@ export default function MyDashboradLayOut() {
               </div>
             </div>
           </ul>
-          
-         
         </nav>
       </div>
       {/*** this is header layout */}
-      <div className={collape ? "body open " : "body"} style={{
-        marginLeft: collape && "60px"
-      }}>
+      <div
+        className={collape ? "body open " : "body"}
+        style={{
+          marginLeft: collape && "60px",
+        }}
+      >
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -307,7 +349,7 @@ export default function MyDashboradLayOut() {
                 setCollape((collape) => !collape);
               }}
             >
-              <MenuIcon/>
+              <MenuIcon />
               {/* {collape ? <MenuIcon /> : <KeyboardArrowLeftIcon />} */}
             </IconButton>
           </Stack>

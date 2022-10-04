@@ -57,6 +57,7 @@ tr:nth-child(even) {
   border-radius: 20px;
 
 }
+
 @media print {
   footer {page-break-after: always;}
 }
